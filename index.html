@@ -65,6 +65,7 @@
 
       const { error } = await client.from('news_submissions').insert({
         title: story.trim().slice(0, 100),
+        content: story,
         name: name,
         area: area,
         phone: phone || null,
@@ -701,4 +702,3 @@ function status(message) {
 </script>
 </body>
 </html>
- 
