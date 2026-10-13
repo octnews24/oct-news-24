@@ -39,4 +39,323 @@ document.getElementById('newsForm').addEventListener('submit',function(e){e.prev
 ধরন: ${d.kind}
 ভিডিও: ${d.link}
 বিবরণ: ${d.story}`;const r=document.getElementById('formResult');r.textContent='এটি একটি ডেমো। ইমেইল অ্যাপ খুলে খসড়াটি পাঠাতে পারবেন; এই ওয়েবসাইট নিজে থেকে তথ্য জমা রাখে না।';const a=document.createElement('a');a.className='btn navy';a.style.marginTop='10px';a.href='mailto:octnews24@gmail.com?subject='+encodeURIComponent('OCT News 24-এ খবর জমা')+'&body='+encodeURIComponent(body);a.textContent='ইমেইল খসড়া খুলুন';r.appendChild(document.createElement('br'));r.appendChild(a);});
-</script></body></html>
+</script>
+<!-- OCT News 24: Admin Login & Dashboard -->
+<style>
+#oct-admin-open{position:fixed;right:16px;bottom:16px;z-index:9998;background:#c8102e;color:white;border:0;border-radius:7px;padding:12px 17px;font-weight:bold;cursor:pointer;box-shadow:0 3px 12px #0003}
+#oct-admin{display:none;position:fixed;inset:0;z-index:9999;background:#f3f5f8;overflow:auto;padding:20px;font-family:Arial,"Noto Sans Bengali",sans-serif;color:#172033}
+#oct-admin .oa-wrap{max-width:850px;margin:20px auto;background:white;border:1px solid #e4e8ef;border-radius:12px;padding:22px}
+#oct-admin h2{color:#101e36;margin-top:0}
+#oct-admin input,#oct-admin textarea,#oct-admin select{width:100%;padding:11px;margin:5px 0 14px;border:1px solid #cbd3df;border-radius:6px;font:inherit;box-sizing:border-box}
+#oct-admin textarea{min-height:150px}
+#oct-admin label{font-weight:bold;font-size:14px}
+#oct-admin .oa-btn{border:0;border-radius:5px;padding:10px 15px;background:#c8102e;color:white;cursor:pointer;font-weight:bold;margin:3px}
+#oct-admin .oa-secondary{background:#101e36}
+#oct-admin .oa-status{padding:10px;background:#f3f5f8;border-radius:5px;overflow-wrap:anywhere;margin:12px 0}
+#oct-admin .oa-item{border:1px solid #e4e8ef;border-radius:7px;padding:13px;margin:12px 0}
+#oct-admin .oa-item h3{margin:4px 0}
+#oct-admin .oa-small{font-size:13px;color:#687386}
+#oct-admin .oa-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+</style>
+
+<button id="oct-admin-open" type="button">Admin Login</button>
+
+<section id="oct-admin">
+  <div class="oa-wrap">
+    <div class="oa-top">
+      <h2>OCT News 24 — Admin</h2>
+      <button type="button" class="oa-btn oa-secondary" id="oa-close">বন্ধ করুন</button>
+    </div>
+
+    <div id="oa-login">
+      <p>Admin ইমেইল ও পাসওয়ার্ড দিয়ে Login করো।</p>
+      <form id="oa-login-form">
+        <label for="oa-email">ইমেইল</label>
+        <input id="oa-email" type="email" autocomplete="username"
+          value="octnews24bd@gmail.com" required>
+        <label for="oa-password">পাসওয়ার্ড</label>
+        <input id="oa-password" type="password"
+          autocomplete="current-password" required>
+        <button class="oa-btn" type="submit">Login</button>
+      </form>
+    </div>
+
+    <div id="oa-dashboard" hidden>
+      <p id="oa-welcome"></p>
+      <h3 id="oa-form-title">নতুন সংবাদ লিখুন</h3>
+      <form id="oa-news-form">
+        <label for="oa-title">সংবাদের শিরোনাম *</label>
+        <input id="oa-title" maxlength="250" required>
+
+        <label for="oa-category">বিভাগ *</label>
+        <select id="oa-category" required>
+          <option>জাতীয়</option>
+          <option>আন্তর্জাতিক</option>
+          <option>সারাদেশ</option>
+          <option>খেলাধুলা</option>
+          <option>রাজনীতি</option>
+          <option>অর্থনীতি</option>
+          <option>প্রযুক্তি</option>
+          <option>বিনোদন</option>
+        </select>
+
+        <label for="oa-image">ছবির URL (ঐচ্ছিক)</label>
+        <input id="oa-image" type="url" placeholder="https://example.com/photo.jpg">
+
+        <label for="oa-content">সংবাদের সম্পূর্ণ বিবরণ *</label>
+        <textarea id="oa-content" required></textarea>
+
+        <label>
+          <input id="oa-published" type="checkbox"
+            style="width:auto;margin:0 6px 12px 0">
+          সংবাদ Publish করো
+        </label>
+        <div>
+          <button class="oa-btn" type="submit" id="oa-save">সংবাদ সংরক্ষণ</button>
+          <button class="oa-btn oa-secondary" type="button"
+            id="oa-cancel-edit" hidden>সম্পাদনা বাতিল</button>
+        </div>
+      </form>
+
+      <div id="oa-status" class="oa-status" role="status" aria-live="polite"></div>
+      <div class="oa-top">
+        <h3>সংবাদ পরিচালনা</h3>
+        <button type="button" class="oa-btn oa-secondary" id="oa-refresh">Refresh</button>
+      </div>
+      <div id="oa-news-list">সংবাদ লোড হচ্ছে...</div>
+      <button type="button" class="oa-btn oa-secondary" id="oa-logout">Logout</button>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+  const PROJECT_URL = "https://uducrvbywfctyrzwbgxm.supabase.co";
+  const PUBLISHABLE_KEY = "sb_publishable_gRGNrMrTBU5HDVJqpp3GFw_HUit6rxL";
+
+  const panel = document.getElementById("oct-admin");
+  const loginBox = document.getElementById("oa-login");
+  const dashboard = document.getElementById("oa-dashboard");
+  const statusBox = document.getElementById("oa-status");
+  const newsList = document.getElementById("oa-news-list");
+  let client = null;
+  let editingId = null;
+
+  function status(message) {
+    statusBox.textContent = message;
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, ch => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;",
+      '"': "&quot;", "'": "&#39;"
+    })[ch]);
+  }
+
+  function resetForm() {
+    editingId = null;
+    document.getElementById("oa-news-form").reset();
+    document.getElementById("oa-form-title").textContent = "নতুন সংবাদ লিখুন";
+    document.getElementById("oa-save").textContent = "সংবাদ সংরক্ষণ";
+    document.getElementById("oa-cancel-edit").hidden = true;
+  }
+
+  async function verifyAdmin(user) {
+    const { data, error } = await client
+      .from("admin_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+
+    if (error) throw error;
+    return !!data;
+  }
+
+  async function showDashboard(user) {
+    loginBox.hidden = true;
+    dashboard.hidden = false;
+    document.getElementById("oa-welcome").textContent =
+      "Login: " + user.email;
+    await loadNews();
+  }
+
+  async function loadNews() {
+    newsList.textContent = "সংবাদ লোড হচ্ছে...";
+    const { data, error } = await client
+      .from("news")
+      .select("id,title,content,category,image_url,is_published,created_at")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      newsList.textContent = "সংবাদ লোড হয়নি: " + error.message;
+      return;
+    }
+
+    newsList.replaceChildren();
+
+    if (!data || data.length === 0) {
+      newsList.textContent = "এখনো কোনো সংবাদ নেই। উপরের ফর্ম দিয়ে প্রথম সংবাদ লিখুন।";
+      return;
+    }
+
+    data.forEach(item => {
+      const article = document.createElement("article");
+      article.className = "oa-item";
+      const heading = document.createElement("h3");
+      heading.textContent = item.title;
+
+      const details = document.createElement("p");
+      details.className = "oa-small";
+      details.textContent =
+        item.category + " • " +
+        (item.is_published ? "প্রকাশিত" : "Draft") + " • " +
+        new Date(item.created_at).toLocaleDateString("bn-BD");
+
+      const preview = document.createElement("p");
+      preview.textContent = item.content.length > 180
+        ? item.content.slice(0, 180) + "…" : item.content;
+
+      const edit = document.createElement("button");
+      edit.type = "button";
+      edit.className = "oa-btn oa-secondary";
+      edit.textContent = "সম্পাদনা";
+      edit.addEventListener("click", () => {
+        editingId = item.id;
+        document.getElementById("oa-title").value = item.title;
+        document.getElementById("oa-category").value = item.category;
+        document.getElementById("oa-image").value = item.image_url || "";
+        document.getElementById("oa-content").value = item.content;
+        document.getElementById("oa-published").checked = item.is_published;
+        document.getElementById("oa-form-title").textContent = "সংবাদ সম্পাদনা";
+        document.getElementById("oa-save").textContent = "পরিবর্তন সংরক্ষণ";
+        document.getElementById("oa-cancel-edit").hidden = false;
+        document.getElementById("oa-title").focus();
+        panel.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "oa-btn";
+      remove.textContent = "মুছুন";
+      remove.addEventListener("click", async () => {
+        if (!confirm("এই সংবাদটি স্থায়ীভাবে মুছে ফেলবে?")) return;
+        const { error } = await client.from("news").delete().eq("id", item.id);
+        if (error) {
+          status("মুছে ফেলা যায়নি: " + error.message);
+          return;
+        }
+        status("সংবাদ মুছে ফেলা হয়েছে।");
+        await loadNews();
+      });
+
+      article.append(heading, details, preview, edit, remove);
+      newsList.appendChild(article);
+    });
+  }
+
+  document.getElementById("oct-admin-open").addEventListener("click", async () => {
+    panel.style.display = "block";
+    status("");
+    try {
+      if (!window.supabase) throw new Error("Supabase লাইব্রেরি লোড হয়নি। পেজ Refresh করো।");
+      if (!client) {
+        client = window.supabase.createClient(PROJECT_URL, PUBLISHABLE_KEY);
+      }
+      const { data: { session }, error } = await client.auth.getSession();
+      if (error) throw error;
+
+      if (session) {
+        const allowed = await verifyAdmin(session.user);
+        if (allowed) {
+          await showDashboard(session.user);
+          return;
+        }
+        await client.auth.signOut();
+        status("এই অ্যাকাউন্টের Admin অনুমতি নেই।");
+      }
+      loginBox.hidden = false;
+      dashboard.hidden = true;
+    } catch (error) {
+      loginBox.hidden = false;
+      dashboard.hidden = true;
+      status("ত্রুটি: " + error.message);
+    }
+  });
+
+  document.getElementById("oa-close").addEventListener("click", () => {
+    panel.style.display = "none";
+  });
+
+  document.getElementById("oa-login-form").addEventListener("submit", async event => {
+    event.preventDefault();
+    status("Login যাচাই হচ্ছে...");
+    try {
+      if (!client) {
+        client = window.supabase.createClient(PROJECT_URL, PUBLISHABLE_KEY);
+      }
+      const email = document.getElementById("oa-email").value.trim();
+      const password = document.getElementById("oa-password").value;
+      const { data, error } = await client.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+
+      const allowed = await verifyAdmin(data.user);
+      if (!allowed) {
+        await client.auth.signOut();
+        throw new Error("এই User-এর Admin Role পাওয়া যায়নি।");
+      }
+
+      document.getElementById("oa-password").value = "";
+      status("Admin Login সফল হয়েছে।");
+      await showDashboard(data.user);
+    } catch (error) {
+      status("Login ব্যর্থ: " + error.message);
+    }
+  });
+
+  document.getElementById("oa-news-form").addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!client || dashboard.hidden) return;
+    status("সংবাদ সংরক্ষণ হচ্ছে...");
+
+    const item = {
+      title: document.getElementById("oa-title").value.trim(),
+      category: document.getElementById("oa-category").value,
+      image_url: document.getElementById("oa-image").value.trim() || null,
+      content: document.getElementById("oa-content").value.trim(),
+      is_published: document.getElementById("oa-published").checked,
+      updated_at: new Date().toISOString()
+    };
+
+    try {
+      const result = editingId
+        ? await client.from("news").update(item).eq("id", editingId)
+        : await client.from("news").insert(item);
+
+      if (result.error) throw result.error;
+
+      status(item.is_published
+        ? "সংবাদ সংরক্ষণ ও Publish হয়েছে।"
+        : "সংবাদ Draft হিসেবে সংরক্ষিত হয়েছে।");
+
+      resetForm();
+      await loadNews();
+    } catch (error) {
+      status("সংরক্ষণ ব্যর্থ: " + error.message);
+    }
+  });
+
+  document.getElementById("oa-cancel-edit").addEventListener("click", resetForm);
+  document.getElementById("oa-refresh").addEventListener("click", loadNews);
+
+  document.getElementById("oa-logout").addEventListener("click", async () => {
+    if (client) await client.auth.signOut();
+    dashboard.hidden = true;
+    loginBox.hidden = false;
+    resetForm();
+    status("Logout সম্পন্ন হয়েছে।");
+  });
+})();
+</script>
+</body></html>
