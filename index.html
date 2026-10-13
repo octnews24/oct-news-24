@@ -27,12 +27,21 @@
 </section><aside>
 <div class="sidebar-box latest"><h3>দ্রুত দেখুন</h3><a href="#latest"><span class="num">01</span><span>সর্বশেষ ও প্রধান সংবাদ</span></a><a href="#national"><span class="num">02</span><span>জাতীয় সংবাদ</span></a><a href="#international"><span class="num">03</span><span>আন্তর্জাতিক সংবাদ</span></a><a href="#local"><span class="num">04</span><span>আপনার এলাকার খবর</span></a></div>
 <div class="sidebar-box sidebar-links"><h3>জনপ্রিয় বিভাগ</h3><a href="#national">জাতীয় সংবাদ →</a><a href="#international">আন্তর্জাতিক সংবাদ →</a><a href="#local">সারাদেশ →</a><a href="#sports">খেলাধুলা →</a><a href="#video">ভিডিও নিউজ →</a></div>
-<div class="submitbox" id="submit"><h3>আপনার খবর পাঠান</h3> <p>আপনার খবর জমা দিন। যাচাই ও Admin-এর অনুমোদনের পর সংবাদ প্রকাশ করা হবে।</p><form id="newsForm"><label for="name">আপনার নাম *</label><input id="name" required placeholder="নাম লিখুন"><label for="area">এলাকা *</label><input id="area" required placeholder="গ্রাম / উপজেলা / জেলা"><label for="phone">মোবাইল নম্বর</label><input id="phone" type="tel" placeholder="যোগাযোগ নম্বর"><label for="kind">খবরের ধরন</label><select id="kind"><option>স্থানীয় সংবাদ</option><option>জাতীয় সংবাদ</option><option>আন্তর্জাতিক সংবাদ</option><option>খেলাধুলা</option><option>ভিডিও রিপোর্ট</option></select><label for="link">YouTube ভিডিও লিংক (থাকলে)</label><input id="link" type="url" placeholder="https://youtu.be/..."><label for="story">খবরের বিবরণ *</label><textarea id="story" required placeholder="কী ঘটেছে, কোথায়, কখন লিখুন"></textarea><label class="checkline"><input id="rights" type="checkbox" required><span>আমি নিশ্চিত করছি তথ্য সঠিক এবং ছবি/ভিডিও ব্যবহারের অনুমতি আমার আছে।</span></label> <button class="btn" type="submit" style="margin-top:12px;width:100%">খবর জমা দিন</button><div id="formResult" class="notice" aria-live="polite"></div></form> <div class="notice">জমা দেওয়া সংবাদ যাচাই না হওয়া পর্যন্ত প্রকাশ করা হবে না।</div>
+<div class="submitbox" id="submit"><h3>আপনার খবর পাঠান</h3> <p>আপনার খবর জমা দিন। যাচাই ও Admin-এর অনুমোদনের পর সংবাদ প্রকাশ করা হবে।</p><form id="newsForm"><label for="name">আপনার নাম *</label><input id="name" required placeholder="নাম লিখুন"><label for="area">এলাকা *</label><input id="area" required placeholder="গ্রাম / উপজেলা / জেলা"><label for="phone">মোবাইল নম্বর</label><input id="phone" type="tel" placeholder="যোগাযোগ নম্বর"><label for="kind">খবরের ধরন</label><select id="kind"><option>স্থানীয় সংবাদ</option><option>জাতীয় সংবাদ</option><option>আন্তর্জাতিক সংবাদ</option><option>খেলাধুলা</option><option>ভিডিও রিপোর্ট</option></select><label for="link">YouTube ভিডিও লিংক (থাকলে)</label><input id="link" type="url" placeholder="https://youtu.be/..."><label for="story">খবরের বিবরণ *</label><textarea id="story" required placeholder="কী ঘটেছে, কোথায়, কখন লিখুন"></textarea><label class="checkline"><input id="rights" type="checkbox" required><span>আমি নিশ্চিত করছি তথ্য সঠিক এবং ছবি/ভিডিও ব্যবহারের অনুমতি আমার আছে।</span></label> <button class="btn" type="submit" style="margin-top:12px;width:100%">খবর জমা দিন</button><div id="formResult" class="notice" aria-live="polite"></div></form> <div class="notice">জমা দেওয়া সংবাদ যাচাই না হওয়া পর্যন্ত প্রকাশ করা হবে না।</div></div>
+</aside>
 <script>
-const now=new Date();document.getElementById('year').textContent=now.getFullYear();document.getElementById('today').textContent=now.toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'});
- 
- ```html
-<script>
+const now=new Date(); ```javascript
+const now = new Date();
+
+document.getElementById('year').textContent = now.getFullYear();
+
+document.getElementById('today').textContent =
+  now.toLocaleDateString('bn-BD', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
 document.getElementById('newsForm').addEventListener('submit', async function(e) {
   e.preventDefault();
 
@@ -41,7 +50,7 @@ document.getElementById('newsForm').addEventListener('submit', async function(e)
 
   try {
     if (!window.supabase) {
-      throw new Error('Supabase লাইব্রেরি পাওয়া যায়নি। পেজ Refresh করো।');
+      throw new Error('Supabase লাইব্রেরি পাওয়া যায়নি।');
     }
 
     const client = window.supabase.createClient(
@@ -49,41 +58,39 @@ document.getElementById('newsForm').addEventListener('submit', async function(e)
       'sb_publishable_gRGNrMrTBU5HDVJqpp3GFw_HUit6rxL'
     );
 
-    const d = {
-      name: document.getElementById('name').value.trim(),
-      area: document.getElementById('area').value.trim(),
-      phone: document.getElementById('phone').value.trim(),
-      kind: document.getElementById('kind').value,
-      link: document.getElementById('link').value.trim(),
-      story: document.getElementById('story').value.trim(),
-      rights: document.getElementById('rights').checked
-    };
+    const name = document.getElementById('name').value.trim();
+    const area = document.getElementById('area').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const kind = document.getElementById('kind').value;
+    const link = document.getElementById('link').value.trim();
+    const story = document.getElementById('story').value.trim();
+    const rights = document.getElementById('rights').checked;
 
-    if (!d.name || !d.area || !d.story) {
+    if (!name || !area || !story) {
       throw new Error('নাম, এলাকা ও খবরের বিবরণ পূরণ করো।');
     }
 
-    if (!d.rights) {
-      throw new Error('তথ্য ও ছবি/ভিডিও ব্যবহারের অনুমতির ঘরে টিক দাও।');
+    if (!rights) {
+      throw new Error('অনুমতির ঘরে টিক দাও।');
     }
 
     const { error } = await client
       .from('news_submissions')
       .insert({
-        name: d.name,
-        area: d.area,
-        phone: d.phone || null,
-        kind: d.kind,
-        story: d.story,
-        link: d.link || null,
-        video_url: d.link || null,
+        name: name,
+        area: area,
+        phone: phone || null,
+        kind: kind,
+        story: story,
+        link: link || null,
+        video_url: link || null,
         status: 'pending'
       });
 
     if (error) throw error;
 
     resultBox.textContent =
-      'আপনার সংবাদ সফলভাবে জমা হয়েছে! Admin যাচাই করার পর প্রকাশ করা হবে।';
+      'সংবাদ সফলভাবে জমা হয়েছে! Admin যাচাই করার পর প্রকাশ করা হবে।';
 
     this.reset();
 
@@ -94,6 +101,9 @@ document.getElementById('newsForm').addEventListener('submit', async function(e)
   }
 });
 </script>
+</body>
+</html>
+```
 ```
 <!-- OCT News 24: Admin Login & Dashboard -->
 <style>
