@@ -32,13 +32,65 @@
 <footer class="footer"><div class="wrap"><div class="footer-grid"><div><h3>OCT News 24</h3><p>Your News. Your Voice.</p><p>সঠিক তথ্য, দায়িত্বশীল সাংবাদিকতা ও পাঠকের অংশগ্রহণ আমাদের অঙ্গীকার।</p></div><div><h3>যোগাযোগ</h3><p>ইমেইল: octnews24@gmail.com</p><p>ফোন: 01313648125</p></div></div><div class="footer-bottom">© <span id="year"></span> OCT News 24 · সর্বস্বত্ব সংরক্ষিত</div></div></footer>
 <script>
 const now=new Date();document.getElementById('year').textContent=now.getFullYear();document.getElementById('today').textContent=now.toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'});
-document.getElementById('newsForm').addEventListener('submit',function(e){e.preventDefault();const d={name:document.getElementById('name').value,area:document.getElementById('area').value,phone:document.getElementById('phone').value,kind:document.getElementById('kind').value,link:document.getElementById('link').value,story:document.getElementById('story').value};const body=`OCT News 24-এ খবর জমার খসড়া
-নাম: ${d.name}
-এলাকা: ${d.area}
-ফোন: ${d.phone}
-ধরন: ${d.kind}
-ভিডিও: ${d.link}
-বিবরণ: ${d.story}`;const r=document.getElementById('formResult');r.textContent='এটি একটি ডেমো। ইমেইল অ্যাপ খুলে খসড়াটি পাঠাতে পারবেন; এই ওয়েবসাইট নিজে থেকে তথ্য জমা রাখে না।';const a=document.createElement('a');a.className='btn navy';a.style.marginTop='10px';a.href='mailto:octnews24@gmail.com?subject='+encodeURIComponent('OCT News 24-এ খবর জমা')+'&body='+encodeURIComponent(body);a.textContent='ইমেইল খসড়া খুলুন';r.appendChild(document.createElement('br'));r.appendChild(a);});
+ 
+document.getElementById('newsForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const resultBox = document.getElementById('formResult');
+  resultBox.textContent = 'সংবাদ জমা হচ্ছে...';
+
+  try {
+    if (!window.supabase) {
+      throw new Error('Supabase লাইব্রেরি পাওয়া যায়নি। পেজ Refresh করো।');
+    }
+
+    const SUPABASE_URL = 'https://uducrvbywfctyrzwbgxm.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_gRGNrMrTBU5HDVJqpp3GFw_HUit6rxL';
+
+    const client = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    const d = {
+      name: document.getElementById('name').value.trim(),
+      area: document.getElementById('area').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      kind: document.getElementById('kind').value,
+      link: document.getElementById('link').value.trim(),
+      story: document.getElementById('story').value.trim()
+    };
+
+    if (!d.name || !d.area || !d.phone || !d.kind || !d.story) {
+      throw new Error('নাম, এলাকা, ফোন, খবরের ধরন ও বিবরণ পূরণ করো।');
+    }
+
+    const { error } = await client
+      .from('news_submissions')
+      .insert({
+        name: d.name,
+        area: d.area,
+        phone: d.phone,
+        kind: d.kind,
+        story: d.story,
+        link: d.link || null,
+        video_url: d.link || null,
+        status: 'pending'
+      });
+
+    if (error) throw error;
+
+    resultBox.textContent =
+      'আপনার সংবাদ সফলভাবে জমা হয়েছে! যাচাইয়ের পর প্রকাশ করা হবে।';
+
+    this.reset();
+
+  } catch (error) {
+    resultBox.textContent =
+      'সংবাদ জমা দেওয়া যায়নি: ' + error.message;
+  }
+});
+
 </script>
 <!-- OCT News 24: Admin Login & Dashboard -->
 <style>
