@@ -63,10 +63,24 @@
       if (!name || !area || !story) throw new Error('নাম, এলাকা ও খবরের বিবরণ পূরণ করো।');
       if (!rights) throw new Error('অনুমতির ঘরে টিক দাও।');
 
-      const { error } = await client.from('news_submissions').insert({
-        name, area, phone: phone || null, kind, story,
-        link: link || null, video_url: link || null, status: 'pending'
-      });
+       
+const { error } = await client
+  .from('news_submissions')
+  .insert({
+    title: story.trim().slice(0, 100),
+    content: story,
+    name: name,
+    area: area,
+    phone: phone || null,
+    kind: kind,
+    story: story,
+    link: link || null,
+    video_url: link || null,
+    status: 'pending'
+  });
+
+if (error) throw error;
+
       if (error) throw error;
       resultBox.textContent = 'সংবাদ সফলভাবে জমা হয়েছে! Admin যাচাই করার পর প্রকাশ করা হবে।';
       this.reset();
