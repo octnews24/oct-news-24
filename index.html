@@ -29,82 +29,55 @@
 <div class="sidebar-box sidebar-links"><h3>জনপ্রিয় বিভাগ</h3><a href="#national">জাতীয় সংবাদ →</a><a href="#international">আন্তর্জাতিক সংবাদ →</a><a href="#local">সারাদেশ →</a><a href="#sports">খেলাধুলা →</a><a href="#video">ভিডিও নিউজ →</a></div>
 <div class="submitbox" id="submit"><h3>আপনার খবর পাঠান</h3> <p>আপনার খবর জমা দিন। যাচাই ও Admin-এর অনুমোদনের পর সংবাদ প্রকাশ করা হবে।</p><form id="newsForm"><label for="name">আপনার নাম *</label><input id="name" required placeholder="নাম লিখুন"><label for="area">এলাকা *</label><input id="area" required placeholder="গ্রাম / উপজেলা / জেলা"><label for="phone">মোবাইল নম্বর</label><input id="phone" type="tel" placeholder="যোগাযোগ নম্বর"><label for="kind">খবরের ধরন</label><select id="kind"><option>স্থানীয় সংবাদ</option><option>জাতীয় সংবাদ</option><option>আন্তর্জাতিক সংবাদ</option><option>খেলাধুলা</option><option>ভিডিও রিপোর্ট</option></select><label for="link">YouTube ভিডিও লিংক (থাকলে)</label><input id="link" type="url" placeholder="https://youtu.be/..."><label for="story">খবরের বিবরণ *</label><textarea id="story" required placeholder="কী ঘটেছে, কোথায়, কখন লিখুন"></textarea><label class="checkline"><input id="rights" type="checkbox" required><span>আমি নিশ্চিত করছি তথ্য সঠিক এবং ছবি/ভিডিও ব্যবহারের অনুমতি আমার আছে।</span></label> <button class="btn" type="submit" style="margin-top:12px;width:100%">খবর জমা দিন</button><div id="formResult" class="notice" aria-live="polite"></div></form> <div class="notice">জমা দেওয়া সংবাদ যাচাই না হওয়া পর্যন্ত প্রকাশ করা হবে না।</div></div>
 </aside>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const now=new Date(); ```javascript
-const now = new Date();
-
-document.getElementById('year').textContent = now.getFullYear();
-
-document.getElementById('today').textContent =
-  now.toLocaleDateString('bn-BD', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
-document.getElementById('newsForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-
-  const resultBox = document.getElementById('formResult');
-  resultBox.textContent = 'সংবাদ জমা হচ্ছে...';
-
-  try {
-    if (!window.supabase) {
-      throw new Error('Supabase লাইব্রেরি পাওয়া যায়নি।');
-    }
-
-    const client = window.supabase.createClient(
-      'https://uducrvbywfctyrzwbgxm.supabase.co',
-      'sb_publishable_gRGNrMrTBU5HDVJqpp3GFw_HUit6rxL'
-    );
-
-    const name = document.getElementById('name').value.trim();
-    const area = document.getElementById('area').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const kind = document.getElementById('kind').value;
-    const link = document.getElementById('link').value.trim();
-    const story = document.getElementById('story').value.trim();
-    const rights = document.getElementById('rights').checked;
-
-    if (!name || !area || !story) {
-      throw new Error('নাম, এলাকা ও খবরের বিবরণ পূরণ করো।');
-    }
-
-    if (!rights) {
-      throw new Error('অনুমতির ঘরে টিক দাও।');
-    }
-
-    const { error } = await client
-      .from('news_submissions')
-      .insert({
-        name: name,
-        area: area,
-        phone: phone || null,
-        kind: kind,
-        story: story,
-        link: link || null,
-        video_url: link || null,
-        status: 'pending'
-      });
-
-    if (error) throw error;
-
-    resultBox.textContent =
-      'সংবাদ সফলভাবে জমা হয়েছে! Admin যাচাই করার পর প্রকাশ করা হবে।';
-
-    this.reset();
-
-  } catch (error) {
-    console.error('News submission error:', error);
-    resultBox.textContent =
-      'সংবাদ জমা দেওয়া যায়নি: ' + error.message;
+(() => {
+  const todayElement = document.getElementById('today');
+  if (todayElement) {
+    todayElement.textContent = new Date().toLocaleDateString('bn-BD', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
   }
-});
+
+  const newsForm = document.getElementById('newsForm');
+  if (!newsForm) return;
+
+  newsForm.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const resultBox = document.getElementById('formResult');
+    resultBox.textContent = 'সংবাদ জমা হচ্ছে...';
+
+    try {
+      if (!window.supabase) throw new Error('Supabase লাইব্রেরি পাওয়া যায়নি। পেজ Refresh করে আবার চেষ্টা করো।');
+      const client = window.supabase.createClient(
+        'https://uducrvbywfctyrzwbgxm.supabase.co',
+        'sb_publishable_gRGNrMrTBU5HDVJqpp3GFw_HUit6rxL'
+      );
+      const name = document.getElementById('name').value.trim();
+      const area = document.getElementById('area').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const kind = document.getElementById('kind').value;
+      const link = document.getElementById('link').value.trim();
+      const story = document.getElementById('story').value.trim();
+      const rights = document.getElementById('rights').checked;
+      if (!name || !area || !story) throw new Error('নাম, এলাকা ও খবরের বিবরণ পূরণ করো।');
+      if (!rights) throw new Error('অনুমতির ঘরে টিক দাও।');
+
+      const { error } = await client.from('news_submissions').insert({
+        name, area, phone: phone || null, kind, story,
+        link: link || null, video_url: link || null, status: 'pending'
+      });
+      if (error) throw error;
+      resultBox.textContent = 'সংবাদ সফলভাবে জমা হয়েছে! Admin যাচাই করার পর প্রকাশ করা হবে।';
+      this.reset();
+    } catch (error) {
+      console.error('News submission error:', error);
+      resultBox.textContent = 'সংবাদ জমা দেওয়া যায়নি: ' + (error.message || 'অজানা ত্রুটি');
+    }
+  });
+})();
 </script>
-</body>
-</html>
-```
-```
+
 <!-- OCT News 24: Admin Login & Dashboard -->
 <style>
 #oct-admin-open{position:fixed;right:16px;bottom:16px;z-index:9998;background:#c8102e;color:white;border:0;border-radius:7px;padding:12px 17px;font-weight:bold;cursor:pointer;box-shadow:0 3px 12px #0003}
@@ -204,12 +177,18 @@ document.getElementById('newsForm').addEventListener('submit', async function(e)
         <button type="button" class="oa-btn oa-secondary" id="oa-refresh">Refresh</button>
       </div>
       <div id="oa-news-list">সংবাদ লোড হচ্ছে...</div>
+
+      <div class="oa-top" style="margin-top:28px">
+        <h3>পাঠকের জমা দেওয়া খবর</h3>
+        <button type="button" class="oa-btn oa-secondary" id="oa-submissions-refresh">Refresh</button>
+      </div>
+      <p class="oa-small">Pending খবর যাচাই করে Approve করলে সেটি প্রকাশের ফর্মে আসবে; Publish checkbox না দিলে Draft থাকবে।</p>
+      <div id="oa-submissions-list">জমা দেওয়া খবর লোড হচ্ছে...</div>
       <button type="button" class="oa-btn oa-secondary" id="oa-logout">Logout</button>
     </div>
   </div>
 </section>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (() => {
   const PROJECT_URL = "https://uducrvbywfctyrzwbgxm.supabase.co";
@@ -262,7 +241,85 @@ function status(message) {
     dashboard.hidden = false;
     document.getElementById("oa-welcome").textContent =
       "Login: " + user.email;
-    await loadNews();
+    await Promise.all([loadNews(), loadSubmissions()]);
+  }
+
+  async function loadSubmissions() {
+    const list = document.getElementById("oa-submissions-list");
+    list.textContent = "জমা দেওয়া খবর লোড হচ্ছে...";
+    const { data, error } = await client
+      .from("news_submissions")
+      .select("id,name,area,phone,kind,story,link,video_url,image_url,status,created_at")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      list.textContent = "জমা দেওয়া খবর লোড হয়নি: " + error.message + " (news_submissions টেবিলের কলাম ও Admin RLS policy যাচাই করো।)";
+      return;
+    }
+    list.replaceChildren();
+    if (!data || data.length === 0) {
+      list.textContent = "এখনো কোনো পাঠক-সংবাদ জমা পড়েনি।";
+      return;
+    }
+
+    data.forEach(item => {
+      const article = document.createElement("article");
+      article.className = "oa-item";
+      const heading = document.createElement("h3");
+      heading.textContent = item.kind || "পাঠকের সংবাদ";
+      const meta = document.createElement("p");
+      meta.className = "oa-small";
+      meta.textContent = `নাম: ${item.name || "উল্লেখ নেই"} • এলাকা: ${item.area || "উল্লেখ নেই"} • অবস্থা: ${item.status || "pending"} • ${item.created_at ? new Date(item.created_at).toLocaleDateString("bn-BD") : "তারিখ নেই"}`;
+      const story = document.createElement("p");
+      story.style.whiteSpace = "pre-wrap";
+      story.textContent = item.story || "বিবরণ নেই";
+      article.append(heading, meta, story);
+      if (item.phone) {
+        const phone = document.createElement("p"); phone.className = "oa-small";
+        phone.textContent = "যোগাযোগ: " + item.phone; article.appendChild(phone);
+      }
+      const videoUrl = item.video_url || item.link;
+      if (videoUrl) {
+        const link = document.createElement("a"); link.href = videoUrl; link.target = "_blank"; link.rel = "noopener noreferrer";
+        link.textContent = "ভিডিও/লিংক খুলুন"; link.className = "oa-small"; article.appendChild(link);
+      }
+      if ((item.status || "pending") === "pending") {
+        const approve = document.createElement("button");
+        approve.type = "button"; approve.className = "oa-btn"; approve.textContent = "Approve করে Draft তৈরি";
+        approve.addEventListener("click", async () => {
+          if (!confirm("এই খবরটি যাচাই করা হয়েছে এবং Draft হিসেবে news টেবিলে যোগ করবে?")) return;
+          approve.disabled = true;
+          try {
+            const { error: insertError } = await client.from("news").insert({
+              title: (item.story || "পাঠকের সংবাদ").trim().slice(0, 250),
+              content: item.story || "",
+              category: item.kind || "সারাদেশ",
+              image_url: item.image_url || null,
+              is_published: false
+            });
+            if (insertError) throw insertError;
+            const { error: updateError } = await client.from("news_submissions").update({ status: "approved" }).eq("id", item.id);
+            if (updateError) throw updateError;
+            status("খবরটি Draft হিসেবে news-এ যোগ হয়েছে। সংবাদ পরিচালনা থেকে শিরোনাম ও বিবরণ ঠিক করে Publish করতে পারো।");
+            await Promise.all([loadNews(), loadSubmissions()]);
+          } catch (err) {
+            status("Approve করা যায়নি: " + err.message);
+            approve.disabled = false;
+          }
+        });
+        const reject = document.createElement("button");
+        reject.type = "button"; reject.className = "oa-btn oa-secondary"; reject.textContent = "Reject";
+        reject.addEventListener("click", async () => {
+          if (!confirm("এই জমাটি Reject করবে?")) return;
+          reject.disabled = true;
+          const { error: updateError } = await client.from("news_submissions").update({ status: "rejected" }).eq("id", item.id);
+          if (updateError) { status("Reject করা যায়নি: " + updateError.message); reject.disabled = false; return; }
+          status("জমাটি Reject করা হয়েছে।"); await loadSubmissions();
+        });
+        article.append(approve, reject);
+      }
+      list.appendChild(article);
+    });
   }
 
   async function loadNews() {
@@ -485,6 +542,7 @@ function status(message) {
   document.getElementById("oa-cancel-edit").addEventListener("click", resetForm);
 
   document.getElementById("oa-refresh").addEventListener("click", loadNews);
+  document.getElementById("oa-submissions-refresh").addEventListener("click", loadSubmissions);
 
   document.getElementById("oa-logout").addEventListener("click", async () => {
     if (client) await client.auth.signOut();
@@ -634,4 +692,5 @@ function status(message) {
 })();
 
 </script>
-</body></html>
+</body>
+</html>
