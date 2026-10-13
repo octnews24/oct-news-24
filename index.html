@@ -363,4 +363,72 @@ function status(message) {
   });
 })();
 </script>
+
+<script>
+(async function () {
+  const SUPABASE_URL = "https://uducrvbywfctyrzwbgxm.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_gRGNrMrTBU5HDVJqpp3GFw_HUit6rxL";
+
+  const container = document.querySelector(".cards");
+  if (!container || !window.supabase) return;
+
+  const client = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  const { data, error } = await client
+    .from("news")
+    .select("id, title, content, category, image_url, created_at")
+    .eq("is_published", true)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("সংবাদ লোড হয়নি:", error.message);
+    return;
+  }
+
+  if (!data || data.length === 0) return;
+
+  container.replaceChildren();
+
+  data.forEach((news) => {
+    const card = document.createElement("article");
+    card.className = "card";
+
+    if (news.image_url) {
+      const img = document.createElement("img");
+      img.src = news.image_url;
+      img.alt = news.title || "সংবাদের ছবি";
+      img.style.width = "100%";
+      img.style.height = "180px";
+      img.style.objectFit = "cover";
+      card.appendChild(img);
+    } else {
+      const art = document.createElement("div");
+      art.className = "card-art";
+      art.textContent = news.category || "সংবাদ";
+      card.appendChild(art);
+    }
+
+    const body = document.createElement("div");
+    body.className = "card-body";
+
+    const tag = document.createElement("span");
+    tag.className = "tag";
+    tag.textContent = news.category || "সাধারণ";
+
+    const heading = document.createElement("h3");
+    heading.textContent = news.title || "শিরোনাম নেই";
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.textContent = new Date(news.created_at).toLocaleDateString("bn-BD");
+
+    body.append(tag, heading, meta);
+    card.appendChild(body);
+    container.appendChild(card);
+  });
+})();
+</script>
 </body></html>
