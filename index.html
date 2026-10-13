@@ -68,6 +68,8 @@ document.getElementById('newsForm').addEventListener('submit',function(e){e.prev
     </div>
 
     <div id="oa-login">
+<div id="oa-login-status" class="oa-status" role="status" aria-live="polite"></div>
+
       <p>Admin ইমেইল ও পাসওয়ার্ড দিয়ে Login করো।</p>
       <form id="oa-login-form">
         <label for="oa-email">ইমেইল</label>
@@ -137,14 +139,17 @@ document.getElementById('newsForm').addEventListener('submit',function(e){e.prev
   const panel = document.getElementById("oct-admin");
   const loginBox = document.getElementById("oa-login");
   const dashboard = document.getElementById("oa-dashboard");
-  const statusBox = document.getElementById("oa-status");
+  const statusBox = document.getElementById("oa-status");const loginStatusBox = document.getElementById("oa-login-status");
   const newsList = document.getElementById("oa-news-list");
   let client = null;
   let editingId = null;
 
-  function status(message) {
-    statusBox.textContent = message;
-  }
+ 
+function status(message) {
+  statusBox.textContent = message;
+  loginStatusBox.textContent = message;
+}
+
 
   function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, ch => ({
