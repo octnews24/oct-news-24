@@ -76,6 +76,38 @@ body{background:#f4f6fa;color:var(--ink)}
 @media(max-width:360px){.cards{grid-template-columns:1fr}.brand h1{font-size:22px}}
 </style>
 
+
+<style id="oct-tv-news-layout">
+/* Structural homepage refresh inspired by the selected TV-news demo */
+.layout{grid-template-columns:minmax(0,1.85fr) minmax(280px,.82fr);gap:22px}
+#lead-heading{margin-bottom:13px}
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:stretch}
+.hero-art{height:100%;min-height:310px;aspect-ratio:auto;position:relative}
+.hero-body{align-self:center;padding:24px}
+.hero h2{font-size:clamp(22px,2.3vw,30px)}
+#latest-news-list .latest-item{display:grid;grid-template-columns:32px minmax(0,1fr);gap:10px;padding:11px 0;border-bottom:1px solid var(--line);align-items:start}
+#latest-news-list .latest-item:last-child{border-bottom:0}
+#latest-news-list .latest-num{font-size:18px;font-weight:900;color:var(--red);line-height:1.4}
+#latest-news-list .latest-title{font-size:14px;font-weight:750;line-height:1.55;color:var(--navy)}
+#latest-news-list .latest-meta{display:block;margin-top:4px;font-size:11px;font-weight:400;color:var(--muted)}
+.video-news-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.video-news-card{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;min-width:0}
+.video-news-card img{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#101e36}
+.video-news-card .vnc-body{padding:10px}
+.video-news-card .vnc-title{font-size:14px;line-height:1.5;font-weight:800;color:var(--navy)}
+.video-news-card .vnc-play{color:var(--red);font-size:12px;font-weight:800;margin-top:5px}
+.video-news-card button{padding:0;border:0;background:transparent;text-align:left;width:100%;cursor:pointer;font:inherit}
+@media(max-width:800px){
+ .hero{grid-template-columns:1fr}.hero-art{height:auto;min-height:0;aspect-ratio:16/9}
+ .hero-body{padding:18px}.layout{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+ .hero{display:flex;flex-direction:column}.hero-art{width:100%;min-height:0;aspect-ratio:16/9}
+ .hero h2{font-size:22px}.video-news-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #latest-news-list .latest-title{font-size:13px}
+}
+</style>
+
 </head>
 <body>
 <div class="topline"><div class="wrap"><span>সত্যনিষ্ঠ সংবাদ • দায়িত্বশীল সাংবাদিকতা</span><span id="today">OCT News 24</span></div></div>
@@ -85,17 +117,18 @@ body{background:#f4f6fa;color:var(--ink)}
 <section class="wrap" id="international-breaking" style="display:none;background:#fff;border:1px solid #e4e8ef;border-top:3px solid #c8102e;border-radius:8px;padding:14px 18px;margin-top:14px"><h2 style="margin:0 0 8px;color:#c8102e;font-size:19px">আন্তর্জাতিক ব্রেকিং নিউজ</h2><div id="international-breaking-list"></div></section>
 <div class="wrap" style="padding-top:14px"><a class="btn" href="#submit" style="display:block;text-align:center;font-size:18px;padding:15px;border-radius:10px;background:#c8102e;color:#fff;font-weight:800;box-shadow:0 4px 12px #c8102e33">📰 খবর জমা দিন — আপনার খবর OCT News 24-কে পাঠান</a></div>
 <main class="wrap page layout" id="home"><section>
-<div class="section-head" id="latest"><h2>সর্বশেষ সংবাদ</h2><span>যাচাই করা খবর</span></div>
+<div class="section-head" id="lead-heading"><h2>আজকের প্রধান খবর</h2><span>OCT News 24</span></div>
 <article class="hero" id="main-feature"><div class="hero-art" id="main-feature-art"><div>প্রকাশিত প্রধান সংবাদ</div></div><div class="hero-body"><span class="tag">প্রধান সংবাদ</span><h2 id="main-feature-title">সংবাদ লোড হচ্ছে…</h2><div class="meta" id="main-feature-meta">OCT News 24</div><p id="main-feature-content">সর্বশেষ প্রকাশিত সংবাদ এখানে দেখানো হবে।</p><button class="btn" id="main-feature-read" type="button">সম্পূর্ণ সংবাদ পড়ুন</button></div></article>
+<div class="section-head" id="latest" style="margin-top:28px"><h2>সর্বশেষ সংবাদ</h2><span>সর্বশেষ প্রকাশিত</span></div>
 <div class="cards">
 <article class="card" id="national"><div class="card-art">জাতীয় সংবাদ</div><div class="card-body"><span class="tag">জাতীয়</span><h3>জাতীয় সংবাদের শিরোনাম এখানে লিখুন</h3><div class="meta">তারিখ যোগ করুন · OCT News 24</div></div></article>
 <article class="card" id="international"><div class="card-art">আন্তর্জাতিক সংবাদ</div><div class="card-body"><span class="tag">আন্তর্জাতিক</span><h3>আন্তর্জাতিক সংবাদের শিরোনাম এখানে লিখুন</h3><div class="meta">তারিখ যোগ করুন · ডেস্ক রিপোর্ট</div></div></article>
 <article class="card" id="local"><div class="card-art">সারাদেশের খবর</div><div class="card-body"><span class="tag">সারাদেশ</span><h3>আপনার এলাকার যাচাই করা খবর এখানে দেখান</h3><div class="meta">এলাকা ও তারিখ যোগ করুন</div></div></article>
 <article class="card" id="sports"><div class="card-art">খেলাধুলা</div><div class="card-body"><span class="tag">খেলাধুলা</span><h3>খেলাধুলার সংবাদের শিরোনাম এখানে লিখুন</h3><div class="meta">তারিখ যোগ করুন · ক্রীড়া ডেস্ক</div></div></article>
 </div>
-<div class="section-head" id="video" style="margin-top:28px"><h2>ভিডিও নিউজ</h2><span>YouTube</span></div><div class="video-box"><div class="video-placeholder"><div><strong>ভিডিও নিউজ শিগগিরই</strong><span> এখানে অনুমোদিত YouTube ভিডিও যুক্ত করুন</span></div></div><p style="margin-top:12px">শুধু যাচাই করা এবং ব্যবহারের অনুমতি থাকা ভিডিও প্রকাশ করুন। ভিডিও যুক্ত করতে এই নমুনা অংশটি YouTube Embed কোড দিয়ে বদলাতে হবে।</p></div>
+<div class="section-head" id="video" style="margin-top:28px"><h2>ভিডিও নিউজ</h2><span>YouTube</span></div><div class="video-box"><div id="video-news-list" class="video-news-list"><div class="video-placeholder"><div><strong>ভিডিও নিউজ লোড হচ্ছে…</strong><span> YouTube ভিডিও</span></div></div></div><p style="margin-top:12px">যাচাই করা ও প্রকাশিত ভিডিও সংবাদ এখানে দেখানো হবে।</p></div>
 </section><aside>
-<div class="sidebar-box latest"><h3>দ্রুত দেখুন</h3><a href="#latest"><span class="num">01</span><span>সর্বশেষ ও প্রধান সংবাদ</span></a><a href="#national"><span class="num">02</span><span>জাতীয় সংবাদ</span></a><a href="#international"><span class="num">03</span><span>আন্তর্জাতিক সংবাদ</span></a><a href="#local"><span class="num">04</span><span>আপনার এলাকার খবর</span></a></div>
+<div class="sidebar-box latest"><h3>সর্বশেষ খবর</h3><div id="latest-news-list"><p class="meta">সর্বশেষ সংবাদ লোড হচ্ছে…</p></div></div>
 <div class="sidebar-box sidebar-links"><h3>জনপ্রিয় বিভাগ</h3><a href="#national">জাতীয় সংবাদ →</a><a href="#international">আন্তর্জাতিক সংবাদ →</a><a href="#local">সারাদেশ →</a><a href="#sports">খেলাধুলা →</a><a href="#video">ভিডিও নিউজ →</a></div>
 <div class="submitbox" id="submit"><h3>আপনার খবর জমা দিন</h3> <p>আপনার এলাকার খবর, ছবি ও YouTube ভিডিও লিংক পাঠান। যাচাই ও Admin-এর অনুমোদনের পর সংবাদ প্রকাশ করা হবে।</p><div class="email-tip"><strong>বড় ভিডিও বা গোপন তথ্য পাঠাতে</strong><p>নিউজরুমে ইমেইল করুন: <a href="mailto:octnews24bd@gmail.com?subject=OCT%20News%2024%20-%20News%20Tip">octnews24bd@gmail.com</a></p><small>গোপন তথ্য পাঠানোর আগে মনে রাখবেন: সাধারণ ইমেইল সম্পূর্ণ নিরাপদ বা বেনামি যোগাযোগের নিশ্চয়তা দেয় না।</small></div><form id="newsForm"><label for="name">আপনার নাম *</label><input id="name" required placeholder="নাম লিখুন"><label for="area">এলাকা *</label><input id="area" required placeholder="গ্রাম / উপজেলা / জেলা"><label for="phone">মোবাইল নম্বর</label><input id="phone" type="tel" placeholder="যোগাযোগ নম্বর"><label for="kind">খবরের ধরন</label><select id="kind"><option>স্থানীয় সংবাদ</option><option>জাতীয় সংবাদ</option><option>আন্তর্জাতিক সংবাদ</option><option>খেলাধুলা</option><option>ভিডিও রিপোর্ট</option></select><label for="link">YouTube ভিডিও লিংক (থাকলে)</label><input id="link" type="url" placeholder="https://youtu.be/..."><label for="story">খবরের বিবরণ *</label><textarea id="story" required placeholder="কী ঘটেছে, কোথায়, কখন লিখুন"></textarea><label class="checkline"><input id="rights" type="checkbox" required><span>আমি নিশ্চিত করছি তথ্য সঠিক এবং ছবি/ভিডিও ব্যবহারের অনুমতি আমার আছে।</span></label> <button class="btn" type="submit" style="margin-top:12px;width:100%">খবর জমা দিন</button><div id="formResult" class="notice" aria-live="polite"></div></form> <div class="notice">জমা দেওয়া সংবাদ যাচাই না হওয়া পর্যন্ত প্রকাশ করা হবে না।</div></div>
 </aside>
@@ -673,6 +706,99 @@ function status(message) {
   }
 
   const ticker = document.getElementById("breaking-headline");
+
+  // Build the live latest-news sidebar and video-news strip from published Supabase records.
+  const latestList = document.getElementById("latest-news-list");
+  if (latestList) {
+    latestList.replaceChildren();
+    (data || []).slice(0, 6).forEach((item, index) => {
+      const row = document.createElement("div");
+      row.className = "latest-item";
+      const number = document.createElement("span");
+      number.className = "latest-num";
+      number.textContent = String(index + 1).padStart(2, "0");
+      const link = document.createElement("button");
+      link.type = "button";
+      link.className = "latest-title";
+      link.style.cssText = "border:0;background:none;padding:0;text-align:left;cursor:pointer;font:inherit";
+      link.textContent = item.title || "শিরোনাম নেই";
+      link.addEventListener("click", () => {
+        const matchingCard = Array.from(document.querySelectorAll(".cards .card")).find(card =>
+          card.getAttribute("aria-label") === "সম্পূর্ণ সংবাদ পড়ুন: " + (item.title || "")
+        );
+        if (matchingCard) matchingCard.click();
+        else document.getElementById("main-feature-read")?.click();
+      });
+      const meta = document.createElement("span");
+      meta.className = "latest-meta";
+      meta.textContent = (item.category || "সাধারণ") + " · " + new Date(item.created_at).toLocaleDateString("bn-BD");
+      const titleWrap = document.createElement("span");
+      titleWrap.append(link, meta);
+      row.append(number, titleWrap);
+      latestList.appendChild(row);
+    });
+    if (!data || !data.length) latestList.textContent = "এখনো কোনো প্রকাশিত সংবাদ নেই।";
+  }
+
+  const videoList = document.getElementById("video-news-list");
+  if (videoList) {
+    videoList.replaceChildren();
+    const videos = (data || []).filter(item => (item.video_url || "").trim()).slice(0, 4);
+    if (!videos.length) {
+      const placeholder = document.createElement("div");
+      placeholder.className = "video-placeholder";
+      placeholder.style.gridColumn = "1 / -1";
+      placeholder.innerHTML = "<div><strong>এখনো ভিডিও নিউজ নেই</strong><span> Admin থেকে YouTube ভিডিও যুক্ত করুন</span></div>";
+      videoList.appendChild(placeholder);
+    } else {
+      videos.forEach(item => {
+        const card = document.createElement("article");
+        card.className = "video-news-card";
+        const button = document.createElement("button");
+        button.type = "button";
+        const img = document.createElement("img");
+        const videoId = (function(value) {
+          try {
+            const url = new URL(value);
+            let id = "";
+            if (url.hostname === "youtu.be" || url.hostname === "www.youtu.be") id = url.pathname.split("/").filter(Boolean)[0] || "";
+            else if (["youtube.com","www.youtube.com","m.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"].includes(url.hostname)) {
+              if (url.pathname === "/watch") id = url.searchParams.get("v") || "";
+              else if (url.pathname.startsWith("/embed/") || url.pathname.startsWith("/shorts/") || url.pathname.startsWith("/live/")) id = url.pathname.split("/")[2] || "";
+            }
+            return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : "";
+          } catch (_) { return ""; }
+        })(item.video_url);
+        img.src = videoId ? "https://i.ytimg.com/vi/" + videoId + "/hqdefault.jpg" : (item.image_url || "");
+        img.alt = item.title || "ভিডিও সংবাদ";
+        img.loading = "lazy";
+        const body = document.createElement("div");
+        body.className = "vnc-body";
+        const title = document.createElement("div");
+        title.className = "vnc-title";
+        title.textContent = item.title || "ভিডিও সংবাদ";
+        const play = document.createElement("div");
+        play.className = "vnc-play";
+        play.textContent = "▶ ভিডিও দেখুন";
+        body.append(title, play);
+        button.append(img, body);
+        button.addEventListener("click", () => {
+          const detail = document.querySelector(".news-detail");
+          if (detail) {
+            const cards = Array.from(document.querySelectorAll(".cards .card"));
+            const found = cards.find(card => card.getAttribute("aria-label") === "সম্পূর্ণ সংবাদ পড়ুন: " + (item.title || ""));
+            if (found) found.click();
+            else window.open(item.video_url, "_blank", "noopener,noreferrer");
+          } else {
+            window.open(item.video_url, "_blank", "noopener,noreferrer");
+          }
+        });
+        card.appendChild(button);
+        videoList.appendChild(card);
+      });
+    }
+  }
+
   const breakingItems = (data || []).filter(item => item.is_breaking);
   if (ticker) ticker.textContent = breakingItems.length
     ? breakingItems[0].title
