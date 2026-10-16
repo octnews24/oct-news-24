@@ -867,7 +867,7 @@ function status(message) {
   }
   function breakingTickerItems(items) { return (items || []).filter(isActiveBreaking); }
 
-  const { data, error } = await client
+  const { data: fetchedData, error } = await client
     .from("news")
     .select("id, title, content, category, image_url, video_url, is_breaking, created_at")
     .eq("is_published", true)
@@ -879,7 +879,10 @@ function status(message) {
     const featureContent = document.getElementById("main-feature-content");
     if (featureTitle) featureTitle.textContent = "সংবাদ লোড করা যায়নি";
     if (featureContent) featureContent.textContent = "সমস্যা: " + error.message;
-    const ticker = document.getElementById("breaking-headline");
+    // Public homepage: show Bengali-script headlines only; English-only RSS headlines stay out of the Bengali feed.
+  const data = (fetchedData || []).filter(item => /[\u0980-\u09FF]/.test(item.title || ""));
+
+  const ticker = document.getElementById("breaking-headline");
     if (ticker) ticker.textContent = "সংবাদ লোড করতে সমস্যা হচ্ছে।";
     if (container) container.replaceChildren();
     const latestList = document.getElementById("latest-news-list");
