@@ -13,7 +13,8 @@
 <div class="topline"><div class="wrap"><span>সত্যনিষ্ঠ সংবাদ • দায়িত্বশীল সাংবাদিকতা</span><span id="today">OCT News 24</span></div></div>
 <header class="masthead"><div class="wrap brand"><div class="logo"><strong>OCT</strong><span>NEWS 24</span></div><div><h1>OCT News 24</h1><p>Your News. Your Voice. | আপনার খবর, আপনার কণ্ঠস্বর</p></div></div></header>
 <nav class="nav"><div class="wrap"><a href="#home">প্রচ্ছদ</a><a href="#latest">সর্বশেষ</a><a href="#national">জাতীয়</a><a href="#international">আন্তর্জাতিক</a><a href="#local">সারাদেশ</a><a href="#sports">খেলাধুলা</a><a href="#video">ভিডিও নিউজ</a><a href="#submit">খবর পাঠান</a></div></nav>
-<div class="breaking"><div class="wrap"><span class="breaking-label">ব্রেকিং নিউজ</span><p>গুরুত্বপূর্ণ ও যাচাই করা খবর এখানে প্রকাশ করুন।</p><small>OCT NEWS 24</small></div></div>
+<div class="breaking"><div class="wrap"><span class="breaking-label">ব্রেকিং নিউজ</span><p id="breaking-headline">গুরুত্বপূর্ণ ও যাচাই করা খবর এখানে প্রকাশ করুন।</p><small>OCT NEWS 24</small></div></div>
+<section class="wrap" id="international-breaking" style="display:none;background:#fff;border:1px solid #e4e8ef;border-top:3px solid #c8102e;border-radius:8px;padding:14px 18px;margin-top:14px"><h2 style="margin:0 0 8px;color:#c8102e;font-size:19px">আন্তর্জাতিক ব্রেকিং নিউজ</h2><div id="international-breaking-list"></div></section>
 <div class="wrap" style="padding-top:14px"><a class="btn" href="#submit" style="display:block;text-align:center;font-size:18px;padding:15px;border-radius:10px;background:#c8102e;color:#fff;font-weight:800;box-shadow:0 4px 12px #c8102e33">📰 খবর জমা দিন — আপনার খবর OCT News 24-কে পাঠান</a></div>
 <main class="wrap page layout" id="home"><section>
 <div class="section-head" id="latest"><h2>সর্বশেষ সংবাদ</h2><span>যাচাই করা খবর</span></div>
@@ -171,6 +172,7 @@
 
         <label for="oa-content">সংবাদের সম্পূর্ণ বিবরণ *</label>
         <textarea id="oa-content" required></textarea>
+        <label><input id="oa-breaking" type="checkbox" style="width:auto;margin:0 6px 12px 0"> 🔴 এই সংবাদটি ব্রেকিং নিউজ হিসেবে দেখাও</label>
 
         <label>
           <input id="oa-published" type="checkbox"
@@ -339,7 +341,7 @@ function status(message) {
     newsList.textContent = "সংবাদ লোড হচ্ছে...";
     const { data, error } = await client
       .from("news")
-      .select("id,title,content,category,image_url,video_url,is_published,created_at")
+      .select("id,title,content,category,image_url,video_url,is_published,is_breaking,created_at")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -383,6 +385,7 @@ function status(message) {
         document.getElementById("oa-video").value = item.video_url || "";
         document.getElementById("oa-content").value = item.content;
         document.getElementById("oa-published").checked = item.is_published;
+        document.getElementById("oa-breaking").checked = !!item.is_breaking;
         document.getElementById("oa-form-title").textContent = "সংবাদ সম্পাদনা";
         document.getElementById("oa-save").textContent = "পরিবর্তন সংরক্ষণ";
         document.getElementById("oa-cancel-edit").hidden = false;
@@ -533,6 +536,7 @@ function status(message) {
         video_url: document.getElementById("oa-video").value.trim() || null,
         content: document.getElementById("oa-content").value.trim(),
         is_published: document.getElementById("oa-published").checked,
+        is_breaking: document.getElementById("oa-breaking").checked,
         updated_at: new Date().toISOString()
       };
 
@@ -585,7 +589,7 @@ function status(message) {
 
   const { data, error } = await client
     .from("news")
-    .select("id, title, content, category, image_url, video_url, created_at")
+    .select("id, title, content, category, image_url, video_url, is_breaking, created_at")
     .eq("is_published", true)
     .order("created_at", { ascending: false });
 
@@ -594,7 +598,35 @@ function status(message) {
     return;
   }
 
-  if (!data || data.length === 0) return;
+  const ticker = document.getElementById("breaking-headline");
+  const breakingItems = (data || []).filter(item => item.is_breaking);
+  if (ticker) ticker.textContent = breakingItems.length
+    ? breakingItems[0].title
+    : "এখন কোনো ব্রেকিং নিউজ নেই।";
+
+  const internationalItems = breakingItems.filter(item =>
+    (item.category || "").trim() === "আন্তর্জাতিক"
+  );
+  const internationalSection = document.getElementById("international-breaking");
+  const internationalList = document.getElementById("international-breaking-list");
+  if (internationalSection && internationalList && internationalItems.length) {
+    internationalSection.style.display = "block";
+    internationalList.replaceChildren();
+    internationalItems.forEach(item => {
+      const row = document.createElement("p");
+      row.style.cssText = "margin:6px 0;font-weight:700;color:#172033";
+      row.textContent = "🔴 " + (item.title || "শিরোনাম নেই");
+      internationalList.appendChild(row);
+    });
+  }
+
+  if (!data || data.length === 0) {
+    container.replaceChildren();
+    const empty = document.createElement("p");
+    empty.textContent = "এখনো কোনো প্রকাশিত সংবাদ নেই।";
+    container.appendChild(empty);
+    return;
+  }
 
   container.replaceChildren();
 
