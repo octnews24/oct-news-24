@@ -857,13 +857,16 @@ function status(message) {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("সংবাদ লোড হয়নি:", error.message);
+    console.error("সংবাদ লোড হয়নি:", error.message, error);
     const featureTitle = document.getElementById("main-feature-title");
     const featureContent = document.getElementById("main-feature-content");
     if (featureTitle) featureTitle.textContent = "সংবাদ লোড করা যায়নি";
-    if (featureContent) featureContent.textContent = "ডাটাবেস সংযোগে সমস্যা হয়েছে। Admin বা Supabase সেটিংস পরীক্ষা করুন।";
+    if (featureContent) featureContent.textContent = "সমস্যা: " + error.message;
     const ticker = document.getElementById("breaking-headline");
-    if (ticker) ticker.textContent = "ব্রেকিং নিউজ লোড করা যায়নি।";
+    if (ticker) ticker.textContent = "সংবাদ লোড করতে সমস্যা হচ্ছে।";
+    if (container) container.replaceChildren();
+    const latestList = document.getElementById("latest-news-list");
+    if (latestList) latestList.textContent = "সংবাদ লোড করা যায়নি: " + error.message;
     return;
   }
 
