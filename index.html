@@ -858,6 +858,15 @@ function status(message) {
   const client = window.octSupabaseClient;
   if (!client) return;
 
+  // Breaking-news helpers must be declared before rendering the ticker.
+  const BREAKING_TTL_MS = 24 * 60 * 60 * 1000;
+  function isActiveBreaking(item) {
+    if (!item || !item.is_breaking || !item.title) return false;
+    const publishedAt = Date.parse(item.created_at || "");
+    return Number.isFinite(publishedAt) && (Date.now() - publishedAt) < BREAKING_TTL_MS && publishedAt <= Date.now();
+  }
+  function breakingTickerItems(items) { return (items || []).filter(isActiveBreaking); }
+
   const { data, error } = await client
     .from("news")
     .select("id, title, content, category, image_url, video_url, is_breaking, created_at")
@@ -870,16 +879,7 @@ function status(message) {
     const featureContent = document.getElementById("main-feature-content");
     if (featureTitle) featureTitle.textContent = "সংবাদ লোড করা যায়নি";
     if (featureContent) featureContent.textContent = "সমস্যা: " + error.message;
-    // Declare breaking-news helpers before the ticker uses them (avoids the temporal-dead-zone error).
-  const BREAKING_TTL_MS = 24 * 60 * 60 * 1000;
-  function isActiveBreaking(item) {
-    if (!item || !item.is_breaking || !item.title) return false;
-    const publishedAt = Date.parse(item.created_at || "");
-    return Number.isFinite(publishedAt) && (Date.now() - publishedAt) < BREAKING_TTL_MS && publishedAt <= Date.now();
-  }
-  function breakingTickerItems(items) { return (items || []).filter(isActiveBreaking); }
-
-  const ticker = document.getElementById("breaking-headline");
+    const ticker = document.getElementById("breaking-headline");
     if (ticker) ticker.textContent = "সংবাদ লোড করতে সমস্যা হচ্ছে।";
     if (container) container.replaceChildren();
     const latestList = document.getElementById("latest-news-list");
