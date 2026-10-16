@@ -211,6 +211,42 @@ body{background:#f4f6fa;color:var(--ink)}
 #oct-admin .oa-small{font-size:13px;color:#687386}
 #oct-admin .oa-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 #oct-admin #oa-ad-form input,#oct-admin #oa-ad-form select,#oct-admin #oa-ad-form textarea{width:100%;padding:10px;margin:5px 0 12px;border:1px solid #cbd3df;border-radius:6px;font:inherit;box-sizing:border-box}#oct-admin #oa-ad-form textarea{min-height:80px}
+
+/* Premium responsive OCT News 24 admin dashboard */
+#oct-admin{background:radial-gradient(ellipse at top left,#e8eef8 0,#f4f6fb 42%,#eef1f6 100%);padding:clamp(10px,2vw,26px)}
+#oct-admin .oa-wrap{max-width:1180px;margin:clamp(6px,2vw,24px) auto;background:transparent;border:0;border-radius:0;padding:0}
+#oct-admin .oa-top:first-child{background:linear-gradient(120deg,#091426,#172b4b 70%,#c8102e);color:#fff;padding:23px 25px;border-radius:16px;box-shadow:0 12px 30px #101e3624;margin-bottom:18px}
+#oct-admin .oa-top:first-child h2{color:#fff;font-size:clamp(21px,3vw,30px);margin:0;letter-spacing:-.3px}
+#oct-admin #oa-close{background:#ffffff18;border:1px solid #ffffff50;color:#fff}
+#oct-admin #oa-welcome{background:#fff;border:1px solid #e4e8f0;border-radius:10px;padding:12px 16px;color:#35435a;font-size:13px;overflow-wrap:anywhere;box-shadow:0 3px 12px #17203308}
+#oct-admin #oa-dashboard>h3,#oct-admin #oa-dashboard>.oa-top h3{color:#101e36;font-size:20px;font-weight:850}
+#oct-admin #oa-news-form,#oct-admin #oa-ad-form{background:#fff;border:1px solid #e3e8f0;border-radius:13px;padding:clamp(14px,2vw,22px);box-shadow:0 5px 20px #17203308}
+#oct-admin input,#oct-admin textarea,#oct-admin select{background:#fbfcfe;border-color:#d8deea;transition:border-color .15s,box-shadow .15s}
+#oct-admin input:focus,#oct-admin textarea:focus,#oct-admin select:focus{outline:none;border-color:#c8102e;box-shadow:0 0 0 3px #c8102e18;background:#fff}
+#oct-admin label{display:block;color:#344158;margin-top:5px}
+#oct-admin .oa-btn{border-radius:7px;padding:10px 15px;box-shadow:0 3px 9px #c8102e1a;transition:transform .15s,filter .15s}
+#oct-admin .oa-btn:hover{filter:brightness(.95);transform:translateY(-1px)}
+#oct-admin .oa-secondary{background:#172b4b;box-shadow:none}
+#oct-admin .oa-status{border:1px solid #e3e8f0;background:#f8faff;padding:12px 14px;border-radius:8px}
+#oct-admin .oa-item{background:#fff;border:1px solid #e3e8f0;border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 4px 16px #17203307;overflow-wrap:anywhere}
+#oct-admin .oa-item h3{color:#172b4b;font-size:17px}
+#oct-admin .oa-small{line-height:1.7}
+#oct-admin #oa-news-list,#oct-admin #oa-submissions-list,#oct-admin #oa-ads-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+#oct-admin #oa-news-list:empty,#oct-admin #oa-submissions-list:empty,#oct-admin #oa-ads-list:empty{display:block}
+#oct-admin #oa-news-list>.oa-item,#oct-admin #oa-submissions-list>.oa-item,#oct-admin #oa-ads-list>.oa-item{margin:0;min-width:0}
+#oct-admin #oa-ads-manager{margin-top:24px!important;background:#f9fbff;border:1px solid #dfe6f2;border-radius:16px;padding:clamp(14px,2vw,22px)}
+#oct-admin #oa-ads-manager>h4{margin:20px 0 10px;color:#172b4b}
+#oct-admin #oa-logout{margin-top:22px;background:#303c50}
+#oct-admin button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+#oct-admin [hidden]{display:none!important}
+@media(max-width:700px){
+ #oct-admin{padding:10px}
+ #oct-admin .oa-top:first-child{padding:17px;border-radius:12px;align-items:flex-start}
+ #oct-admin #oa-news-list,#oct-admin #oa-submissions-list,#oct-admin #oa-ads-list{grid-template-columns:1fr}
+ #oct-admin .oa-top{align-items:flex-start}
+ #oct-admin .oa-btn{max-width:100%;white-space:normal}
+ #oct-admin #oa-news-form,#oct-admin #oa-ad-form{padding:14px}
+}
 </style>
 
 <button id="oct-admin-open" type="button" aria-label="Admin Login">Admin Login</button>
