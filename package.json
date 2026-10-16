@@ -1,0 +1,13 @@
+{
+  "name": "oct-news-24-rss-importer",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Scheduled RSS headline importer for OCT News 24",
+  "scripts": {
+    "import-news": "node scripts/import-rss-news.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.0",
+    "fast-xml-parser": "^5.2.5"
+  }
+}
