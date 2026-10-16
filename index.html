@@ -239,6 +239,19 @@ body{background:#f4f6fa;color:var(--ink)}
 #oct-admin #oa-logout{margin-top:22px;background:#303c50}
 #oct-admin button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 #oct-admin [hidden]{display:none!important}
+#oct-admin .oa-module-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0 22px}
+#oct-admin .oa-module-btn{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;min-width:0;padding:17px 16px;background:#fff;border:1px solid #e1e7f0;border-radius:12px;color:#172033;cursor:pointer;box-shadow:0 4px 15px #17203308;transition:transform .15s,border-color .15s,box-shadow .15s}
+#oct-admin .oa-module-btn>span{font-size:25px;line-height:1.2}
+#oct-admin .oa-module-btn strong{font-size:15px;color:#101e36}
+#oct-admin .oa-module-btn small{font-size:12px;line-height:1.5;color:#687386}
+#oct-admin .oa-module-btn:hover{transform:translateY(-2px);border-color:#c8102e}
+#oct-admin .oa-module-btn.is-active{border-color:#c8102e;box-shadow:0 0 0 2px #c8102e12,0 7px 18px #1720330d;background:linear-gradient(145deg,#fff,#fff8f9)}
+#oct-admin .oa-module-btn.is-active>span{background:#fff0f2;border-radius:8px;padding:7px}
+#oct-admin .oa-section-heading{margin:0 0 17px;padding:17px 19px;border-left:4px solid #c8102e;border-radius:8px;background:linear-gradient(110deg,#fff,#f7f9fd)}
+#oct-admin .oa-section-heading h2{margin:0 0 4px;font-size:22px;color:#101e36}
+#oct-admin .oa-section-heading p{margin:0;font-size:13px;color:#687386}
+#oct-admin .oa-module-view{animation:oaViewIn .18s ease-out}
+@keyframes oaViewIn{from{opacity:.65;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:700px){
  #oct-admin{padding:10px}
  #oct-admin .oa-top:first-child{padding:17px;border-radius:12px;align-items:flex-start}
@@ -276,6 +289,14 @@ body{background:#f4f6fa;color:var(--ink)}
 
     <div id="oa-dashboard" hidden>
       <p id="oa-welcome"></p>
+      <nav class="oa-module-nav" aria-label="Admin বিভাগ">
+        <button type="button" class="oa-module-btn is-active" data-oa-view="news"><span>📰</span><strong>সংবাদ</strong><small>লিখুন ও পরিচালনা</small></button>
+        <button type="button" class="oa-module-btn" data-oa-view="ads"><span>📢</span><strong>বিজ্ঞাপন</strong><small>Ads ও AdSense</small></button>
+        <button type="button" class="oa-module-btn" data-oa-view="submissions"><span>📥</span><strong>জমা পড়া খবর</strong><small>যাচাই ও অনুমোদন</small></button>
+        <button type="button" class="oa-module-btn" data-oa-view="settings"><span>⚙️</span><strong>সেটিংস</strong><small>পরবর্তী সুবিধা</small></button>
+      </nav>
+      <section class="oa-module-view" id="oa-view-news">
+      <div class="oa-section-heading"><h2>সংবাদ ডেস্ক</h2><p>নতুন সংবাদ তৈরি, সম্পাদনা এবং প্রকাশের নিয়ন্ত্রণ</p></div>
       <h3 id="oa-form-title">নতুন সংবাদ লিখুন</h3>
       <form id="oa-news-form">
         <label for="oa-title">সংবাদের শিরোনাম *</label>
@@ -335,8 +356,11 @@ body{background:#f4f6fa;color:var(--ink)}
         <button type="button" class="oa-btn oa-secondary" id="oa-refresh">Refresh</button>
       </div>
       <div id="oa-news-list">সংবাদ লোড হচ্ছে...</div>
+      </section>
 
-      <section class="oa-item" id="oa-ads-manager" style="margin-top:28px">
+      <section class="oa-module-view" id="oa-view-ads" hidden>
+      <div class="oa-section-heading"><h2>বিজ্ঞাপন ডেস্ক</h2><p>নিজস্ব বিজ্ঞাপন ও Google AdSense পরিচালনা</p></div>
+      <section class="oa-item" id="oa-ads-manager" style="margin-top:0">
         <div class="oa-top"><h3>📢 বিজ্ঞাপন পরিচালনা (Ads Management)</h3><button type="button" class="oa-btn oa-secondary" id="oa-ads-refresh">বিজ্ঞাপন Refresh</button></div>
         <p class="oa-small">নিজস্ব বিজ্ঞাপন যোগ/বন্ধ করো এবং Google AdSense-এর Client ID ও Ad Slot সেট করো। বিজ্ঞাপন চালু করার আগে Save করতে হবে।</p>
         <form id="oa-ad-form">
@@ -354,13 +378,22 @@ body{background:#f4f6fa;color:var(--ink)}
         <div id="oa-ad-status" class="oa-status" role="status" aria-live="polite"></div>
         <h4>সংরক্ষিত বিজ্ঞাপন</h4><div id="oa-ads-list">বিজ্ঞাপন লোড হচ্ছে...</div>
       </section>
+      </section>
 
-      <div class="oa-top" style="margin-top:28px">
-        <h3>পাঠকের জমা দেওয়া খবর</h3>
+      <section class="oa-module-view" id="oa-view-submissions" hidden>
+      <div class="oa-section-heading"><h2>পাঠকের জমা পড়া খবর</h2><p>প্রতিটি খবর যাচাই করে তারপর Draft তৈরি করুন</p></div>
+      <div class="oa-top" style="margin-top:12px">
+        <h3>জমা দেওয়া খবর</h3>
         <button type="button" class="oa-btn oa-secondary" id="oa-submissions-refresh">Refresh</button>
       </div>
       <p class="oa-small">Pending খবর যাচাই করে Approve করলে সেটি প্রকাশের ফর্মে আসবে; Publish checkbox না দিলে Draft থাকবে।</p>
       <div id="oa-submissions-list">জমা দেওয়া খবর লোড হচ্ছে...</div>
+      </section>
+      <section class="oa-module-view" id="oa-view-settings" hidden>
+        <div class="oa-section-heading"><h2>Dashboard সেটিংস</h2><p>এখানে পরবর্তী ধাপে নতুন প্রশাসনিক সুবিধা যোগ করা যাবে।</p></div>
+        <article class="oa-item"><h3>🔐 নিরাপত্তা</h3><p class="oa-small">Admin লগইন ও অনুমতি যাচাই Supabase-এর মাধ্যমে চলবে।</p></article>
+        <article class="oa-item"><h3>🧩 ভবিষ্যতের মডিউল</h3><p class="oa-small">ক্যাটাগরি, সম্পাদক/রিপোর্টার, সাইটের যোগাযোগের তথ্য এবং অন্যান্য সেটিংস আলাদা বিভাগ হিসেবে যোগ করা যাবে।</p></article>
+      </section>
       <button type="button" class="oa-btn oa-secondary" id="oa-logout">Logout</button>
     </div>
   </div>
@@ -413,11 +446,29 @@ function status(message) {
     return !!data;
   }
 
+  function showAdminView(view) {
+    const allowed = ["news", "ads", "submissions", "settings"];
+    const selected = allowed.includes(view) ? view : "news";
+    allowed.forEach(name => {
+      const section = document.getElementById("oa-view-" + name);
+      if (section) section.hidden = name !== selected;
+    });
+    document.querySelectorAll("#oa-dashboard .oa-module-btn").forEach(button => {
+      const active = button.dataset.oaView === selected;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+  }
+  document.querySelectorAll("#oa-dashboard .oa-module-btn").forEach(button => {
+    button.addEventListener("click", () => showAdminView(button.dataset.oaView));
+  });
+
   async function showDashboard(user) {
     loginBox.hidden = true;
     dashboard.hidden = false;
     document.getElementById("oa-welcome").textContent =
       "Login: " + user.email;
+    showAdminView("news");
     await Promise.all([loadNews(), loadSubmissions(), loadAds()]);
   }
 
