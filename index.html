@@ -166,6 +166,9 @@
   placeholder="https://example.com/photo.jpg"
 >
 
+        <label for="oa-video">YouTube ভিডিও লিংক (ঐচ্ছিক)</label>
+        <input id="oa-video" type="url" inputmode="url" placeholder="https://www.youtube.com/watch?v=...">
+
         <label for="oa-content">সংবাদের সম্পূর্ণ বিবরণ *</label>
         <textarea id="oa-content" required></textarea>
 
@@ -336,7 +339,7 @@ function status(message) {
     newsList.textContent = "সংবাদ লোড হচ্ছে...";
     const { data, error } = await client
       .from("news")
-      .select("id,title,content,category,image_url,is_published,created_at")
+      .select("id,title,content,category,image_url,video_url,is_published,created_at")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -377,6 +380,7 @@ function status(message) {
         document.getElementById("oa-title").value = item.title;
         document.getElementById("oa-category").value = item.category;
         document.getElementById("oa-image").value = item.image_url || "";
+        document.getElementById("oa-video").value = item.video_url || "";
         document.getElementById("oa-content").value = item.content;
         document.getElementById("oa-published").checked = item.is_published;
         document.getElementById("oa-form-title").textContent = "সংবাদ সম্পাদনা";
@@ -526,6 +530,7 @@ function status(message) {
         title: document.getElementById("oa-title").value.trim(),
         category: document.getElementById("oa-category").value,
         image_url: imageUrl,
+        video_url: document.getElementById("oa-video").value.trim() || null,
         content: document.getElementById("oa-content").value.trim(),
         is_published: document.getElementById("oa-published").checked,
         updated_at: new Date().toISOString()
@@ -580,7 +585,7 @@ function status(message) {
 
   const { data, error } = await client
     .from("news")
-    .select("id, title, content, category, image_url, created_at")
+    .select("id, title, content, category, image_url, video_url, created_at")
     .eq("is_published", true)
     .order("created_at", { ascending: false });
 
@@ -627,6 +632,8 @@ function status(message) {
   detail.append(closeBtn, title, meta, image, content);
   container.parentNode.insertBefore(detail, container.nextSibling);
 
+  function getYouTubeId(value) { if (!value) return null; try { const url = new URL(value); let id = ""; if (url.hostname === "youtu.be" || url.hostname === "www.youtu.be") id = url.pathname.split("/").filter(Boolean)[0] || ""; else if (["youtube.com","www.youtube.com","m.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"].includes(url.hostname)) { if (url.pathname === "/watch") id = url.searchParams.get("v") || ""; else if (url.pathname.startsWith("/embed/") || url.pathname.startsWith("/shorts/") || url.pathname.startsWith("/live/")) id = url.pathname.split("/")[2] || ""; } return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : null; } catch (_) { return null; } }
+
   function openNews(news) {
     title.textContent = news.title || "শিরোনাম নেই";
     meta.textContent =
@@ -644,6 +651,7 @@ function status(message) {
       image.hidden = true;
     }
 
+    const oldVideo = detail.querySelector(".news-video"); if (oldVideo) oldVideo.remove(); const videoId = getYouTubeId(news.video_url); if (videoId) { const wrap = document.createElement("div"); wrap.className = "news-video"; wrap.style.cssText = "position:relative;aspect-ratio:16/9;margin:18px 0;"; const frame = document.createElement("iframe"); frame.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(videoId); frame.title = "OCT News 24 YouTube video"; frame.loading = "lazy"; frame.referrerPolicy = "strict-origin-when-cross-origin"; frame.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"; frame.allowFullscreen = true; frame.style.cssText = "position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:8px;"; wrap.appendChild(frame); content.before(wrap); }
     container.hidden = true;
     detail.hidden = false;
     detail.scrollIntoView({ behavior: "smooth", block: "start" });
