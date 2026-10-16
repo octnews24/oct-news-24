@@ -207,6 +207,7 @@ body{background:#f4f6fa;color:var(--ink)}
 #oct-admin .oa-item h3{margin:4px 0}
 #oct-admin .oa-small{font-size:13px;color:#687386}
 #oct-admin .oa-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+#oct-admin #oa-ad-form input,#oct-admin #oa-ad-form select,#oct-admin #oa-ad-form textarea{width:100%;padding:10px;margin:5px 0 12px;border:1px solid #cbd3df;border-radius:6px;font:inherit;box-sizing:border-box}#oct-admin #oa-ad-form textarea{min-height:80px}
 </style>
 
 <button id="oct-admin-open" type="button" aria-label="Admin Login">Admin Login</button>
@@ -296,6 +297,25 @@ body{background:#f4f6fa;color:var(--ink)}
       </div>
       <div id="oa-news-list">সংবাদ লোড হচ্ছে...</div>
 
+      <section class="oa-item" id="oa-ads-manager" style="margin-top:28px">
+        <div class="oa-top"><h3>📢 বিজ্ঞাপন পরিচালনা (Ads Management)</h3><button type="button" class="oa-btn oa-secondary" id="oa-ads-refresh">বিজ্ঞাপন Refresh</button></div>
+        <p class="oa-small">নিজস্ব বিজ্ঞাপন যোগ/বন্ধ করো এবং Google AdSense-এর Client ID ও Ad Slot সেট করো। বিজ্ঞাপন চালু করার আগে Save করতে হবে।</p>
+        <form id="oa-ad-form">
+          <label for="oa-ad-title">বিজ্ঞাপনের নাম</label><input id="oa-ad-title" maxlength="180" placeholder="যেমন: ABC প্রতিষ্ঠানের বিজ্ঞাপন">
+          <label for="oa-ad-kind">বিজ্ঞাপনের ধরন</label><select id="oa-ad-kind"><option value="direct">নিজস্ব বিজ্ঞাপন</option><option value="adsense">Google AdSense</option></select>
+          <label for="oa-ad-placement">কোথায় দেখাবে</label><select id="oa-ad-placement"><option value="top">হোমপেজের উপরে</option><option value="sidebar">সাইডবারে</option><option value="between">সংবাদের মাঝে</option></select>
+          <label for="oa-ad-image">ছবির URL (নিজস্ব বিজ্ঞাপনের জন্য)</label><input id="oa-ad-image" type="url" placeholder="https://example.com/ad.jpg">
+          <label for="oa-ad-url">বিজ্ঞাপনে ক্লিক করলে যে লিংক খুলবে</label><input id="oa-ad-url" type="url" placeholder="https://example.com">
+          <label for="oa-ad-copy">বিজ্ঞাপনের লেখা</label><textarea id="oa-ad-copy" placeholder="সংক্ষিপ্ত বিজ্ঞাপনী লেখা"></textarea>
+          <label for="oa-ad-client">AdSense Publisher Client ID (ca-pub-...)</label><input id="oa-ad-client" inputmode="text" placeholder="ca-pub-XXXXXXXXXXXXXXXX">
+          <label for="oa-ad-slot">AdSense Ad Slot ID</label><input id="oa-ad-slot" inputmode="numeric" placeholder="1234567890">
+          <label><input id="oa-ad-enabled" type="checkbox" style="width:auto;margin:0 6px 12px 0" checked> এই বিজ্ঞাপন চালু রাখো</label>
+          <div><button class="oa-btn" type="submit" id="oa-ad-save">বিজ্ঞাপন সংরক্ষণ</button><button class="oa-btn oa-secondary" type="button" id="oa-ad-reset">ফর্ম পরিষ্কার</button></div>
+        </form>
+        <div id="oa-ad-status" class="oa-status" role="status" aria-live="polite"></div>
+        <h4>সংরক্ষিত বিজ্ঞাপন</h4><div id="oa-ads-list">বিজ্ঞাপন লোড হচ্ছে...</div>
+      </section>
+
       <div class="oa-top" style="margin-top:28px">
         <h3>পাঠকের জমা দেওয়া খবর</h3>
         <button type="button" class="oa-btn oa-secondary" id="oa-submissions-refresh">Refresh</button>
@@ -359,7 +379,7 @@ function status(message) {
     dashboard.hidden = false;
     document.getElementById("oa-welcome").textContent =
       "Login: " + user.email;
-    await Promise.all([loadNews(), loadSubmissions()]);
+    await Promise.all([loadNews(), loadSubmissions(), loadAds()]);
   }
 
   async function loadSubmissions() {
@@ -439,6 +459,50 @@ function status(message) {
       list.appendChild(article);
     });
   }
+
+  let editingAdId = null;
+  const adStatus = document.getElementById("oa-ad-status");
+  function adMessage(message) { if (adStatus) adStatus.textContent = message; }
+  function resetAdForm() {
+    editingAdId = null;
+    document.getElementById("oa-ad-form").reset();
+    document.getElementById("oa-ad-enabled").checked = true;
+    document.getElementById("oa-ad-save").textContent = "বিজ্ঞাপন সংরক্ষণ";
+  }
+  async function loadAds() {
+    const list = document.getElementById("oa-ads-list");
+    if (!list || !client) return;
+    list.textContent = "বিজ্ঞাপন লোড হচ্ছে...";
+    const {data,error} = await client.from("site_ads").select("*").order("created_at",{ascending:false});
+    if (error) { list.textContent = "বিজ্ঞাপন লোড হয়নি: " + error.message + "। Supabase-এ site_ads SQL চালানো হয়েছে কি না দেখো।"; return; }
+    list.replaceChildren();
+    if (!data || !data.length) { list.textContent = "এখনো কোনো বিজ্ঞাপন যোগ করা হয়নি।"; return; }
+    data.forEach(ad => {
+      const card=document.createElement("article"); card.className="oa-item";
+      const h=document.createElement("h4"); h.textContent=(ad.kind==="adsense"?"Google AdSense: ":"নিজস্ব বিজ্ঞাপন: ")+(ad.title||"নাম নেই");
+      const meta=document.createElement("p"); meta.className="oa-small"; meta.textContent="স্থান: "+ad.placement+" • "+(ad.enabled?"চালু":"বন্ধ");
+      const edit=document.createElement("button"); edit.type="button"; edit.className="oa-btn oa-secondary"; edit.textContent="সম্পাদনা";
+      edit.addEventListener("click",()=>{editingAdId=ad.id;document.getElementById("oa-ad-title").value=ad.title||"";document.getElementById("oa-ad-kind").value=ad.kind||"direct";document.getElementById("oa-ad-placement").value=ad.placement||"top";document.getElementById("oa-ad-image").value=ad.image_url||"";document.getElementById("oa-ad-url").value=ad.target_url||"";document.getElementById("oa-ad-copy").value=ad.body||"";document.getElementById("oa-ad-client").value=ad.adsense_client||"";document.getElementById("oa-ad-slot").value=ad.adsense_slot||"";document.getElementById("oa-ad-enabled").checked=!!ad.enabled;document.getElementById("oa-ad-save").textContent="পরিবর্তন সংরক্ষণ";document.getElementById("oa-ad-title").focus();});
+      const toggle=document.createElement("button"); toggle.type="button"; toggle.className="oa-btn"; toggle.textContent=ad.enabled?"বন্ধ করো":"চালু করো";
+      toggle.addEventListener("click",async()=>{const {error}=await client.from("site_ads").update({enabled:!ad.enabled}).eq("id",ad.id);if(error){adMessage("পরিবর্তন হয়নি: "+error.message);return;}adMessage("বিজ্ঞাপনের অবস্থা পরিবর্তন হয়েছে।");await loadAds();});
+      const del=document.createElement("button"); del.type="button"; del.className="oa-btn oa-secondary"; del.textContent="মুছুন";
+      del.addEventListener("click",async()=>{if(!confirm("এই বিজ্ঞাপনটি মুছে ফেলবে?"))return;const {error}=await client.from("site_ads").delete().eq("id",ad.id);if(error){adMessage("মুছতে সমস্যা: "+error.message);return;}adMessage("বিজ্ঞাপন মুছে ফেলা হয়েছে।");await loadAds();});
+      card.append(h,meta,edit,toggle,del);list.appendChild(card);
+    });
+  }
+  document.getElementById("oa-ad-form").addEventListener("submit",async event=>{
+    event.preventDefault();
+    const kind=document.getElementById("oa-ad-kind").value;
+    const record={title:document.getElementById("oa-ad-title").value.trim(),kind,placement:document.getElementById("oa-ad-placement").value,image_url:document.getElementById("oa-ad-image").value.trim()||null,target_url:document.getElementById("oa-ad-url").value.trim()||null,body:document.getElementById("oa-ad-copy").value.trim()||null,adsense_client:document.getElementById("oa-ad-client").value.trim()||null,adsense_slot:document.getElementById("oa-ad-slot").value.trim()||null,enabled:document.getElementById("oa-ad-enabled").checked};
+    if(kind==="direct"&&!record.title){adMessage("নিজস্ব বিজ্ঞাপনের নাম লিখো।");return;}
+    if(kind==="adsense"&&(!/^ca-pub-\\d+$/.test(record.adsense_client||"")||!/^\\d+$/.test(record.adsense_slot||""))){adMessage("AdSense Client ID ca-pub-... এবং Ad Slot ID ঠিকভাবে লিখো।");return;}
+    const button=document.getElementById("oa-ad-save");button.disabled=true;
+    try { const result=editingAdId?await client.from("site_ads").update(record).eq("id",editingAdId):await client.from("site_ads").insert(record);if(result.error)throw result.error;adMessage("বিজ্ঞাপন সংরক্ষণ হয়েছে।");resetAdForm();await loadAds(); }
+    catch(err){adMessage("সংরক্ষণ হয়নি: "+err.message+"। আগে Supabase SQL setup সম্পন্ন করো।");}
+    finally{button.disabled=false;}
+  });
+  document.getElementById("oa-ad-reset").addEventListener("click",resetAdForm);
+  document.getElementById("oa-ads-refresh").addEventListener("click",loadAds);
 
   async function loadNews() {
     newsList.textContent = "সংবাদ লোড হচ্ছে...";
