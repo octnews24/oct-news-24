@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: "*/30 * * * *"
   workflow_dispatch:
+  push:
+    paths:
+      - "scripts/import-rss-news.mjs"
+      - ".github/workflows/rss-auto-news.yml"
 
 permissions:
   contents: read
