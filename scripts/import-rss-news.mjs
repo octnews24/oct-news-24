@@ -128,6 +128,12 @@ for (const feed of feeds) {
         skipped++;
         continue;
       }
+      // The editor's rule: never add a new RSS story without a story photo.
+      if (!imageUrl) {
+        skipped++;
+        console.log(`Skipped (no story photo): ${title.slice(0, 90)}`);
+        continue;
+      }
       const content = [
         summary ? summary.slice(0, 900) : "মূল সংবাদ ও বিস্তারিত জানতে মূল সংবাদসূত্রের লিংকে যান।",
         "",
