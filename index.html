@@ -976,8 +976,8 @@ function status(message) {
     }
   }
 
-  // Breaking labels expire 12 hours after publication; the article itself stays published.
-  const BREAKING_TTL_MS = 12 * 60 * 60 * 1000;
+  // Breaking labels expire 24 hours after publication; the article itself stays published.
+  const BREAKING_TTL_MS = 24 * 60 * 60 * 1000;
   function isActiveBreaking(item) {
     if (!item || !item.is_breaking || !item.title) return false;
     const publishedAt = Date.parse(item.created_at || "");
