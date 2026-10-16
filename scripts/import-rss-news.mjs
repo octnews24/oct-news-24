@@ -12,11 +12,8 @@ const supabase = createClient(supabaseUrl, serviceRoleKey, {
 
 const feeds = [
   { name: "bdnews24.com", url: "https://bdnews24.com/?widgetName=rssfeed&widgetId=1150&getXmlFeed=true", category: "জাতীয়" },
-  { name: "The Daily Star", url: "https://www.thedailystar.net/frontpage/rss.xml", category: "জাতীয়" },
   { name: "Jago News 24", url: "https://www.jagonews24.com/rss/rss.xml", category: "জাতীয়" },
-  { name: "BBC News বাংলা", url: "https://feeds.bbci.co.uk/bengali/rss.xml", category: "আন্তর্জাতিক" },
-  { name: "BBC World", url: "https://feeds.bbci.co.uk/news/world/rss.xml", category: "আন্তর্জাতিক" },
-  { name: "Al Jazeera", url: "https://www.aljazeera.com/xml/rss/all.xml", category: "আন্তর্জাতিক" }
+  { name: "BBC News বাংলা", url: "https://feeds.bbci.co.uk/bengali/rss.xml", category: "আন্তর্জাতিক" }
 ];
 const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_", trimValues: true });
 const clean = (v) => String(v ?? "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\s+/g, " ").trim();
