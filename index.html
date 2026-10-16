@@ -87,7 +87,7 @@ body{background:#f4f6fa;color:var(--ink)}
 .hero-body{align-self:auto;padding:24px}
 #main-feature-content{font-size:17px;line-height:1.95;white-space:pre-wrap;overflow-wrap:anywhere}
 .news-detail{scroll-margin-top:75px}
-#main-feature-read{display:none}
+#main-feature-read{display:inline-block}
 .hero h2{font-size:clamp(22px,2.3vw,30px)}
 #latest-news-list .latest-item{display:grid;grid-template-columns:32px minmax(0,1fr);gap:10px;padding:11px 0;border-bottom:1px solid var(--line);align-items:start}
 #latest-news-list .latest-item:last-child{border-bottom:0}
@@ -1077,7 +1077,7 @@ function status(message) {
     if (featureMeta) featureMeta.textContent = (featured.category || "সাধারণ") + " · " + new Date(featured.created_at).toLocaleDateString("bn-BD");
     if (featureContent) {
       const summary = (featured.content || "").trim();
-      featureContent.textContent = summary || "বিস্তারিত পাওয়া যায়নি।";
+      featureContent.textContent = summary.length > 260 ? summary.slice(0, 260) + "…" : (summary || "বিস্তারিত পাওয়া যায়নি।");
     }
     if (featureArt) {
       featureArt.replaceChildren();
@@ -1257,5 +1257,17 @@ function status(message) {
 <script id="oct-submit-form-toggle">
 (()=>{const box=document.getElementById('submit');const open=document.getElementById('open-submit-form');if(!box)return;const toggle=()=>{box.hidden=!box.hidden;if(!box.hidden)box.scrollIntoView({behavior:'smooth',block:'start'});};open?.addEventListener('click',toggle);document.querySelectorAll('.nav a[href="#submit"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();if(box.hidden)box.hidden=false;box.scrollIntoView({behavior:'smooth',block:'start'});}));})();
 </script>
+
+<style id="oct-news-three-column-cards">
+/* News cards: three compact stories per row on desktop; clicking opens full story. */
+#news-list.cards,.cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.cards .card img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#101e36}
+.cards .card-body{padding:12px}
+.cards .card h3{font-size:15px;line-height:1.5}
+#main-feature-content{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;white-space:normal}
+#main-feature-read{display:inline-block!important}
+@media(max-width:800px){#news-list.cards,.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:440px){#news-list.cards,.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.cards .card h3{font-size:13px}.cards .card-body{padding:9px}}
+</style>
 </body>
 </html>
