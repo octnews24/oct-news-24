@@ -1269,5 +1269,56 @@ function status(message) {
 @media(max-width:800px){#news-list.cards,.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:440px){#news-list.cards,.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.cards .card h3{font-size:13px}.cards .card-body{padding:9px}}
 </style>
+
+<!-- OCT News 24: real visitor counter -->
+<style id="oct-real-visitor-counter-style">
+#oct-real-visitor-counter{position:fixed;right:14px;bottom:14px;z-index:20;display:flex;align-items:center;gap:8px;padding:9px 13px;background:#101e36;color:#fff;border:1px solid #ffffff24;border-radius:999px;box-shadow:0 5px 18px #101e3630;font:600 12px/1.4 Arial,"Noto Sans Bengali",sans-serif}
+#oct-real-visitor-counter .ovc-dot{width:8px;height:8px;border-radius:50%;background:#36d399;box-shadow:0 0 0 3px #36d39924}
+#oct-real-visitor-counter strong{color:#ffd166;font-variant-numeric:tabular-nums}
+#oct-real-visitor-counter .ovc-sep{color:#8995aa}
+@media(max-width:480px){#oct-real-visitor-counter{right:8px;bottom:8px;padding:7px 10px;font-size:11px}}
+</style>
+<div id="oct-real-visitor-counter" role="status" aria-live="polite" title="ওয়েবসাইটে রেকর্ড হওয়া ভিজিট">
+  <span class="ovc-dot" aria-hidden="true"></span>
+  <span>আজ <strong id="ovc-today">—</strong></span>
+  <span class="ovc-sep">|</span>
+  <span>মোট <strong id="ovc-total">—</strong></span>
+</div>
+<script id="oct-real-visitor-counter-script">
+(async function(){
+  const URL="https://uducrvbywfctyrzwbgxm.supabase.co";
+  const KEY="sb_publishable_gRGNrMrTBU5HDVJqpp3GFw_HUit6rxL";
+  const todayEl=document.getElementById("ovc-today");
+  const totalEl=document.getElementById("ovc-total");
+  if(!window.supabase || !todayEl || !totalEl) return;
+  try{
+    const client=window.supabase.createClient(URL,KEY);
+    const day=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Dhaka",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+    const key="octnews24-visitor-id";
+    let visitorId=localStorage.getItem(key);
+    if(!visitorId){
+      visitorId=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+"-"+Math.random().toString(16).slice(2));
+      localStorage.setItem(key,visitorId);
+    }
+    const visitKey="octnews24-visit-"+day;
+    if(localStorage.getItem(visitKey)!=="1"){
+      const {error:insertError}=await client.from("site_visits").insert({visit_date:day,visitor_id:visitorId});
+      if(!insertError || insertError.code==="23505") localStorage.setItem(visitKey,"1");
+      else console.warn("Visitor count insert failed:",insertError.message);
+    }
+    const {data,error}=await client.rpc("get_site_visit_counts");
+    if(error) throw error;
+    const row=Array.isArray(data)?data[0]:data;
+    if(row){
+      todayEl.textContent=Number(row.today_visits||0).toLocaleString("en-US");
+      totalEl.textContent=Number(row.total_visits||0).toLocaleString("en-US");
+    }
+  }catch(err){
+    console.warn("Visitor counter unavailable:",err.message||err);
+    todayEl.textContent="—";totalEl.textContent="—";
+  }
+})();
+</script>
+
 </body>
 </html>
