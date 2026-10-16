@@ -36,6 +36,67 @@ const linkOf = (item) => {
   }
   return item.link?.["@_href"] || "";
 };
+
+// RSS providers expose story photos in different fields (enclosure, media:content,
+// media:thumbnail, or an img tag inside description/content). Prefer those per-story
+// image URLs; do not mistake a feed-wide logo for a story photo.
+const asArray = (value) => value == null ? [] : Array.isArray(value) ? value : [value];
+const validImageUrl = (value) => {
+  let url = String(value ?? "").trim()
+    .replace(/&amp;/g, "&")
+    .replace(/&#x2F;/gi, "/")
+    .replace(/&#47;/g, "/");
+  if (url.startsWith("//")) url = "https:" + url;
+  return /^https?:\/\//i.test(url) ? url : "";
+};
+const mediaUrl = (value) => {
+  for (const entry of asArray(value)) {
+    if (typeof entry === "string") {
+      const direct = validImageUrl(entry);
+      if (direct) return direct;
+    }
+    if (entry && typeof entry === "object") {
+      const candidate = validImageUrl(entry["@_url"] || entry["@_href"] || entry["@_src"] || entry.url || entry.href || entry.src);
+      const type = String(entry["@_type"] || entry.type || "").toLowerCase();
+      if (candidate && (!type || type.startsWith("image/"))) return candidate;
+    }
+  }
+  return "";
+};
+const imageOf = (item) => {
+  const directCandidates = [
+    mediaUrl(item.enclosure),
+    mediaUrl(item["media:content"]),
+    mediaUrl(item["media:thumbnail"]),
+    mediaUrl(item["itunes:image"]),
+    mediaUrl(item.thumbnail),
+    mediaUrl(item.image),
+    mediaUrl(item.content)
+  ];
+  const direct = directCandidates.find(Boolean);
+  if (direct) return direct;
+
+  // Some RSS feeds put the thumbnail inside HTML in description/encoded content.
+  const htmlFields = [
+    item.description?.["#text"] ?? item.description,
+    item.summary?.["#text"] ?? item.summary,
+    item["content:encoded"],
+    item.content?.["#text"]
+  ];
+  for (const field of htmlFields) {
+    if (typeof field !== "string") continue;
+    const html = field
+      .replace(/&lt;/gi, "<")
+      .replace(/&gt;/gi, ">")
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;|&#x27;/gi, "'");
+    const match = html.match(/<(?:img|source)\b[^>]*(?:src|data-src|data-original)\s*=\s*["']([^"']+)["'][^>]*>/i)
+      || html.match(/\b(?:src|data-src|data-original)\s*=\s*["']([^"']+)["']/i);
+    const candidate = validImageUrl(match?.[1]);
+    if (candidate) return candidate;
+  }
+  return "";
+};
 let imported = 0, skipped = 0, failedFeeds = 0;
 for (const feed of feeds) {
   try {
@@ -51,11 +112,22 @@ for (const feed of feeds) {
       const title = clean(item.title?.["#text"] ?? item.title);
       const url = linkOf(item).trim();
       const summary = clean(item.description?.["#text"] ?? item.description ?? item.summary?.["#text"] ?? item.summary ?? item["content:encoded"]);
+      const imageUrl = imageOf(item);
       if (!title || !url.startsWith("http")) { skipped++; continue; }
       const { data: existing, error: findError } = await supabase
-        .from("news").select("id").eq("title", title).limit(1);
+        .from("news").select("id,image_url").eq("title", title).limit(1);
       if (findError) throw findError;
-      if (existing?.length) { skipped++; continue; }
+      if (existing?.length) {
+        // Backfill photos for stories already imported before image extraction was added.
+        if (imageUrl && !existing[0].image_url) {
+          const { error: imageUpdateError } = await supabase
+            .from("news").update({ image_url: imageUrl }).eq("id", existing[0].id);
+          if (imageUpdateError) throw imageUpdateError;
+          console.log(`Added missing photo: ${title.slice(0, 90)}`);
+        }
+        skipped++;
+        continue;
+      }
       const content = [
         summary ? summary.slice(0, 900) : "মূল সংবাদ ও বিস্তারিত জানতে মূল সংবাদসূত্রের লিংকে যান।",
         "",
@@ -68,6 +140,7 @@ for (const feed of feeds) {
         content,
         category: feed.category,
         video_url: url,
+        ...(imageUrl ? { image_url: imageUrl } : {}),
         is_published: true,
         is_breaking: false
       });
