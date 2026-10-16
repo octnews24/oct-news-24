@@ -108,12 +108,12 @@ body{background:#f4f6fa;color:var(--ink)}
 }
 </style>
 
-</head>
+\n<style id="oct-breaking-ticker-animation">\n.breaking .wrap{min-width:0}.breaking-label{display:flex;align-items:center;gap:6px;position:relative;z-index:2}.live-dot{width:7px;height:7px;background:#e11d2e;border-radius:50%;display:inline-block;box-shadow:0 0 0 3px #c8102e22;animation:octLivePulse 1.2s infinite}.ticker-window{flex:1;min-width:0;overflow:hidden;position:relative;white-space:nowrap;mask-image:linear-gradient(90deg,transparent 0,#000 2%,#000 98%,transparent 100%)}.ticker-track{display:inline-flex;align-items:center;width:max-content;white-space:nowrap;animation:octTickerScroll 32s linear infinite;will-change:transform}.ticker-window:hover .ticker-track{animation-play-state:paused}.ticker-item{display:inline-block;padding:0 16px;font-size:14px;font-weight:700;color:#fff}.ticker-separator{color:#ffe16b;font-size:13px}.ticker-idle{animation:none}.breaking small{flex-shrink:0}@keyframes octTickerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}@keyframes octLivePulse{0%,100%{opacity:1}50%{opacity:.35}}@media(max-width:640px){.breaking .wrap{gap:8px}.breaking small{display:none}.breaking-label{font-size:11px;padding:5px 7px}.ticker-item{font-size:13px;padding:0 12px}.ticker-track{animation-duration:25s}}@media(prefers-reduced-motion:reduce){.ticker-track,.live-dot{animation:none!important}}\n</style>\n</head>
 <body>
 <div class="topline"><div class="wrap"><span>সত্যনিষ্ঠ সংবাদ • দায়িত্বশীল সাংবাদিকতা</span><span id="today">OCT News 24</span></div></div>
 <header class="masthead"><div class="wrap brand"><div class="logo"><strong>OCT</strong><span>NEWS 24</span></div><div><h1>OCT News 24</h1><p>Your News. Your Voice. | আপনার খবর, আপনার কণ্ঠস্বর</p></div></div></header>
 <nav class="nav"><div class="wrap"><a href="#home">প্রচ্ছদ</a><a href="#latest">সর্বশেষ</a><a href="#national">জাতীয়</a><a href="#international">আন্তর্জাতিক</a><a href="#local">সারাদেশ</a><a href="#sports">খেলাধুলা</a><a href="#video">ভিডিও নিউজ</a><a href="#submit">খবর পাঠান</a></div></nav>
-<div class="breaking"><div class="wrap"><span class="breaking-label">ব্রেকিং নিউজ</span><p id="breaking-headline">গুরুত্বপূর্ণ ও যাচাই করা খবর এখানে প্রকাশ করুন।</p><small>OCT NEWS 24</small></div></div>
+<div class="breaking"><div class="wrap"><span class="breaking-label"><span class="live-dot"></span> ব্রেকিং নিউজ</span><div class="ticker-window" aria-label="সর্বশেষ ব্রেকিং নিউজ"><div id="breaking-headline" class="ticker-track"><span>গুরুত্বপূর্ণ ও যাচাই করা খবর এখানে প্রকাশ করুন।</span></div></div><small>OCT NEWS 24</small></div></div>
 <section class="wrap" id="international-breaking" style="display:none;background:#fff;border:1px solid #e4e8ef;border-top:3px solid #c8102e;border-radius:8px;padding:14px 18px;margin-top:14px"><h2 style="margin:0 0 8px;color:#c8102e;font-size:19px">আন্তর্জাতিক ব্রেকিং নিউজ</h2><div id="international-breaking-list"></div></section>
 <div class="wrap" style="padding-top:14px"><a class="btn" href="#submit" style="display:block;text-align:center;font-size:18px;padding:15px;border-radius:10px;background:#c8102e;color:#fff;font-weight:800;box-shadow:0 4px 12px #c8102e33">📰 খবর জমা দিন — আপনার খবর OCT News 24-কে পাঠান</a></div>
 <main class="wrap page layout" id="home"><section>
@@ -707,6 +707,33 @@ function status(message) {
 
   const ticker = document.getElementById("breaking-headline");
 
+  // Build a continuously scrolling ticker from all published breaking headlines.
+  if (ticker) {
+    ticker.replaceChildren();
+    const headlines = breakingTickerItems(data);
+    headlines.forEach((item, index) => {
+      const headline = document.createElement("span");
+      headline.className = "ticker-item";
+      headline.textContent = item.title || "শিরোনাম নেই";
+      ticker.appendChild(headline);
+      if (index < headlines.length - 1) {
+        const separator = document.createElement("span");
+        separator.className = "ticker-separator";
+        separator.textContent = " ◆ ";
+        separator.setAttribute("aria-hidden", "true");
+        ticker.appendChild(separator);
+      }
+    });
+    if (!headlines.length) {
+      const fallback = document.createElement("span");
+      fallback.className = "ticker-item";
+      fallback.textContent = "এখন কোনো ব্রেকিং নিউজ নেই।";
+      ticker.appendChild(fallback);
+    }
+    ticker.innerHTML += ticker.innerHTML;
+    ticker.classList.toggle("ticker-idle", headlines.length === 0);
+  }
+
   // Build the live latest-news sidebar and video-news strip from published Supabase records.
   const latestList = document.getElementById("latest-news-list");
   if (latestList) {
@@ -800,9 +827,7 @@ function status(message) {
   }
 
   const breakingItems = (data || []).filter(item => item.is_breaking);
-  if (ticker) ticker.textContent = breakingItems.length
-    ? breakingItems[0].title
-    : "এখন কোনো ব্রেকিং নিউজ নেই।";
+  function breakingTickerItems(items) { return (items || []).filter(item => item.is_breaking && item.title); }
 
   const internationalItems = breakingItems.filter(item =>
     (item.category || "").trim() === "আন্তর্জাতিক"
