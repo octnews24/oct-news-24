@@ -739,6 +739,55 @@ function status(message) {
 
     container.appendChild(card);
   });
+
+  // Navigation: actually filter the live news cards by category instead of only jumping to an anchor.
+  const allCards = Array.from(container.querySelectorAll(".card"));
+  const allNewsHeading = document.querySelector(".section-head#latest h2");
+  const navLinks = document.querySelectorAll(".nav a");
+  function showNewsFilter(label, predicate) {
+    let visibleCount = 0;
+    allCards.forEach((card, index) => {
+      const news = data[index];
+      const show = predicate(news);
+      card.hidden = !show;
+      if (show) visibleCount++;
+    });
+    if (allNewsHeading) allNewsHeading.textContent = label;
+    let emptyMessage = document.getElementById("news-filter-empty");
+    if (!emptyMessage) {
+      emptyMessage = document.createElement("p");
+      emptyMessage.id = "news-filter-empty";
+      emptyMessage.style.cssText = "background:#fff;padding:18px;border-radius:8px;border:1px solid #e4e8ef";
+      container.appendChild(emptyMessage);
+    }
+    emptyMessage.hidden = visibleCount > 0;
+    emptyMessage.textContent = "এই বিভাগে এখনো কোনো প্রকাশিত সংবাদ নেই।";
+    container.hidden = false;
+    const detailPanel = document.querySelector(".news-detail");
+    if (detailPanel) detailPanel.hidden = true;
+  }
+
+  navLinks.forEach(link => {
+    link.addEventListener("click", event => {
+      const href = link.getAttribute("href");
+      const filters = {
+        "#home": ["প্রচ্ছদ", () => true],
+        "#latest": ["সর্বশেষ সংবাদ", () => true],
+        "#national": ["জাতীয় সংবাদ", news => /জাতীয়|জাতীয়/.test((news.category || "").trim())],
+        "#international": ["আন্তর্জাতিক সংবাদ", news => (news.category || "").trim() === "আন্তর্জাতিক"],
+        "#local": ["সারাদেশের খবর", news => /সারাদেশ|স্থানীয়|স্থানীয়|স্থানীয় সংবাদ|স্থানীয়/.test((news.category || "").trim())],
+        "#sports": ["খেলাধুলা", news => /খেলাধুলা|ক্রীড়া|ক্রীড়া|sports/i.test((news.category || "").trim())],
+        "#video": ["ভিডিও নিউজ", news => !!(news.video_url || "").trim()]
+      };
+      if (filters[href]) {
+        event.preventDefault();
+        showNewsFilter(filters[href][0], filters[href][1]);
+        document.querySelector("#latest")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else if (href === "#submit") {
+        document.getElementById("submit")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
 })();
 
 </script>
