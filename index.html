@@ -119,6 +119,7 @@ body{background:#f4f6fa;color:var(--ink)}
 <section class="wrap" id="international-breaking" style="display:none;background:#fff;border:1px solid #e4e8ef;border-top:3px solid #c8102e;border-radius:8px;padding:14px 18px;margin-top:14px"><h2 style="margin:0 0 8px;color:#c8102e;font-size:19px">আন্তর্জাতিক ব্রেকিং নিউজ</h2><div id="international-breaking-list"></div></section>
 <div class="wrap" style="padding-top:14px"><a class="btn" href="#submit" style="display:block;text-align:center;font-size:18px;padding:15px;border-radius:10px;background:#c8102e;color:#fff;font-weight:800;box-shadow:0 4px 12px #c8102e33">📰 খবর জমা দিন — আপনার খবর OCT News 24-কে পাঠান</a></div>
 <main class="wrap page layout" id="home"><section>
+<div id="oct-ad-top" class="oct-ad-slot" aria-label="বিজ্ঞাপন"></div>
 <div class="section-head" id="lead-heading"><h2>আজকের প্রধান খবর</h2><span>OCT News 24</span></div>
 <article class="hero" id="main-feature"><div class="hero-art" id="main-feature-art"><div>প্রকাশিত প্রধান সংবাদ</div></div><div class="hero-body"><span class="tag">প্রধান সংবাদ</span><h2 id="main-feature-title">সংবাদ লোড হচ্ছে…</h2><div class="meta" id="main-feature-meta">OCT News 24</div><p id="main-feature-content">সর্বশেষ প্রকাশিত সংবাদ এখানে দেখানো হবে।</p><button class="btn" id="main-feature-read" type="button">সম্পূর্ণ সংবাদ পড়ুন</button></div></article>
 <div class="section-head" id="latest" style="margin-top:28px"><h2>সর্বশেষ সংবাদ</h2><span>সর্বশেষ প্রকাশিত</span></div>
@@ -128,8 +129,10 @@ body{background:#f4f6fa;color:var(--ink)}
 <article class="card" id="local"><div class="card-art">সারাদেশের খবর</div><div class="card-body"><span class="tag">সারাদেশ</span><h3>আপনার এলাকার যাচাই করা খবর এখানে দেখান</h3><div class="meta">এলাকা ও তারিখ যোগ করুন</div></div></article>
 <article class="card" id="sports"><div class="card-art">খেলাধুলা</div><div class="card-body"><span class="tag">খেলাধুলা</span><h3>খেলাধুলার সংবাদের শিরোনাম এখানে লিখুন</h3><div class="meta">তারিখ যোগ করুন · ক্রীড়া ডেস্ক</div></div></article>
 </div>
+<div id="oct-ad-between" class="oct-ad-slot" aria-label="বিজ্ঞাপন"></div>
 <div class="section-head" id="video" style="margin-top:28px"><h2>ভিডিও নিউজ</h2><span>YouTube</span></div><div class="video-box"><div id="video-news-list" class="video-news-list"><div class="video-placeholder"><div><strong>ভিডিও নিউজ লোড হচ্ছে…</strong><span> YouTube ভিডিও</span></div></div></div><p style="margin-top:12px">যাচাই করা ও প্রকাশিত ভিডিও সংবাদ এখানে দেখানো হবে।</p></div>
 </section><aside>
+<div id="oct-ad-sidebar" class="oct-ad-slot" aria-label="বিজ্ঞাপন"></div>
 <div class="sidebar-box latest"><h3>সর্বশেষ খবর</h3><div id="latest-news-list"><p class="meta">সর্বশেষ সংবাদ লোড হচ্ছে…</p></div></div>
 <div class="sidebar-box sidebar-links"><h3>জনপ্রিয় বিভাগ</h3><a href="#national">জাতীয় সংবাদ →</a><a href="#international">আন্তর্জাতিক সংবাদ →</a><a href="#local">সারাদেশ →</a><a href="#sports">খেলাধুলা →</a><a href="#video">ভিডিও নিউজ →</a></div>
 <div class="submitbox" id="submit"><h3>আপনার খবর জমা দিন</h3> <p>আপনার এলাকার খবর, ছবি ও YouTube ভিডিও লিংক পাঠান। যাচাই ও Admin-এর অনুমোদনের পর সংবাদ প্রকাশ করা হবে।</p><div class="email-tip"><strong>বড় ভিডিও বা গোপন তথ্য পাঠাতে</strong><p>নিউজরুমে ইমেইল করুন: <a href="mailto:octnews24bd@gmail.com?subject=OCT%20News%2024%20-%20News%20Tip">octnews24bd@gmail.com</a></p><small>গোপন তথ্য পাঠানোর আগে মনে রাখবেন: সাধারণ ইমেইল সম্পূর্ণ নিরাপদ বা বেনামি যোগাযোগের নিশ্চয়তা দেয় না।</small></div><form id="newsForm"><label for="name">আপনার নাম *</label><input id="name" required placeholder="নাম লিখুন"><label for="area">এলাকা *</label><input id="area" required placeholder="গ্রাম / উপজেলা / জেলা"><label for="phone">মোবাইল নম্বর</label><input id="phone" type="tel" placeholder="যোগাযোগ নম্বর"><label for="kind">খবরের ধরন</label><select id="kind"><option>স্থানীয় সংবাদ</option><option>জাতীয় সংবাদ</option><option>আন্তর্জাতিক সংবাদ</option><option>খেলাধুলা</option><option>ভিডিও রিপোর্ট</option></select><label for="link">YouTube ভিডিও লিংক (থাকলে)</label><input id="link" type="url" placeholder="https://youtu.be/..."><label for="story">খবরের বিবরণ *</label><textarea id="story" required placeholder="কী ঘটেছে, কোথায়, কখন লিখুন"></textarea><label class="checkline"><input id="rights" type="checkbox" required><span>আমি নিশ্চিত করছি তথ্য সঠিক এবং ছবি/ভিডিও ব্যবহারের অনুমতি আমার আছে।</span></label> <button class="btn" type="submit" style="margin-top:12px;width:100%">খবর জমা দিন</button><div id="formResult" class="notice" aria-live="polite"></div></form> <div class="notice">জমা দেওয়া সংবাদ যাচাই না হওয়া পর্যন্ত প্রকাশ করা হবে না।</div></div>
@@ -1123,6 +1126,53 @@ function status(message) {
   });
 })();
 
+</script>
+<style>
+.oct-ad-slot:empty{display:none}
+.oct-ad-slot{margin:0 0 18px;padding:12px;background:#fff;border:1px solid #e4e8ef;border-radius:9px;overflow:hidden}
+.oct-ad-label{font-size:10px;color:#687386;letter-spacing:.08em;text-align:right;margin-bottom:5px}
+.oct-ad-content{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.oct-ad-content img{display:block;max-width:100%;width:auto;max-height:220px;object-fit:contain;border-radius:5px}
+.oct-ad-copy{flex:1;min-width:160px}
+.oct-ad-copy h3{font-size:17px;line-height:1.4;margin:0 0 5px;color:#101e36}
+.oct-ad-copy p{margin:0;color:#39465b;font-size:14px}
+.oct-ad-cta{display:inline-block;margin-top:8px;background:#c8102e;color:#fff!important;padding:7px 12px;border-radius:5px;font-weight:700;font-size:13px}
+#oct-ad-sidebar{min-width:0}
+#oct-ad-sidebar .oct-ad-content{display:block}
+#oct-ad-sidebar .oct-ad-content img{width:100%;max-height:300px;object-fit:contain}
+@media(max-width:700px){.oct-ad-slot{padding:9px}.oct-ad-content img{max-height:170px}}
+</style>
+<script>
+(async function(){
+  const URL="https://uducrvbywfctyrzwbgxm.supabase.co";
+  const KEY="sb_publishable_gRGNrMrTBU5HDVJqpp3GFw_HUit6rxL";
+  if(!window.supabase)return;
+  const client=window.supabase.createClient(URL,KEY);
+  const targets={top:document.getElementById("oct-ad-top"),sidebar:document.getElementById("oct-ad-sidebar"),between:document.getElementById("oct-ad-between")};
+  function safeHttp(value){try{const u=new URL(value,location.href);return (u.protocol==="https:"||u.protocol==="http:")?u.href:null;}catch(_){return null;}}
+  function el(tag,cls,txt){const n=document.createElement(tag);if(cls)n.className=cls;if(txt)n.textContent=txt;return n;}
+  function direct(ad,slot){
+    const label=el("div","oct-ad-label","বিজ্ঞাপন"),wrap=el("div","oct-ad-content","");
+    const link=safeHttp(ad.target_url),image=safeHttp(ad.image_url);
+    if(image){const img=document.createElement("img");img.src=image;img.alt=ad.title||"বিজ্ঞাপন";img.loading="lazy";
+      if(link){const a=document.createElement("a");a.href=link;a.target="_blank";a.rel="sponsored noopener noreferrer";a.appendChild(img);wrap.appendChild(a);}else wrap.appendChild(img);}
+    if(ad.title||ad.body||link){const copy=el("div","oct-ad-copy","");
+      if(ad.title)copy.appendChild(el("h3","",ad.title));if(ad.body)copy.appendChild(el("p","",ad.body));
+      if(link){const a=el("a","oct-ad-cta","বিস্তারিত দেখুন");a.href=link;a.target="_blank";a.rel="sponsored noopener noreferrer";copy.appendChild(a);}wrap.appendChild(copy);}
+    if(wrap.childNodes.length)slot.replaceChildren(label,wrap);
+  }
+  function adsense(ad,slot){
+    const clientId=(ad.adsense_client||"").trim(),adSlot=(ad.adsense_slot||"").trim();
+    if(!/^ca-pub-\d+$/.test(clientId)||!/^\d+$/.test(adSlot))return;
+    if(!document.querySelector('script[data-oct-adsense="true"]')){const script=document.createElement("script");script.async=true;script.crossOrigin="anonymous";script.dataset.octAdsense="true";script.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client="+encodeURIComponent(clientId);document.head.appendChild(script);}
+    const label=el("div","oct-ad-label","বিজ্ঞাপন"),ins=document.createElement("ins");ins.className="adsbygoogle";ins.style.display="block";ins.setAttribute("data-ad-client",clientId);ins.setAttribute("data-ad-slot",adSlot);ins.setAttribute("data-ad-format","auto");ins.setAttribute("data-full-width-responsive","true");slot.replaceChildren(label,ins);
+    try{(window.adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){console.warn("AdSense unit could not initialize",e);}
+  }
+  try{const {data,error}=await client.from("site_ads").select("id,title,kind,placement,image_url,target_url,body,adsense_client,adsense_slot,enabled").eq("enabled",true);
+    if(error){console.warn("OCT ads unavailable:",error.message);return;}
+    (data||[]).forEach(ad=>{const slot=targets[ad.placement];if(!slot)return;const box=document.createElement("div");box.className="oct-ad-entry";slot.appendChild(box);if(ad.kind==="adsense")adsense(ad,box);else direct(ad,box);if(!box.childNodes.length)box.remove();});
+  }catch(e){console.warn("OCT ads could not load",e);}
+})();
 </script>
 </body>
 </html>
