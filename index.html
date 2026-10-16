@@ -81,9 +81,13 @@ body{background:#f4f6fa;color:var(--ink)}
 /* Structural homepage refresh inspired by the selected TV-news demo */
 .layout{grid-template-columns:minmax(0,1.85fr) minmax(280px,.82fr);gap:22px}
 #lead-heading{margin-bottom:13px}
-.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:stretch}
-.hero-art{height:100%;min-height:310px;aspect-ratio:auto;position:relative}
-.hero-body{align-self:center;padding:24px}
+.hero{display:block;align-items:stretch}
+.hero-art{height:auto;min-height:0;aspect-ratio:16/7;position:relative}
+.hero-art img{object-fit:contain!important;background:#101e36}
+.hero-body{align-self:auto;padding:24px}
+#main-feature-content{font-size:17px;line-height:1.95;white-space:pre-wrap;overflow-wrap:anywhere}
+.news-detail{scroll-margin-top:75px}
+#main-feature-read{display:none}
 .hero h2{font-size:clamp(22px,2.3vw,30px)}
 #latest-news-list .latest-item{display:grid;grid-template-columns:32px minmax(0,1fr);gap:10px;padding:11px 0;border-bottom:1px solid var(--line);align-items:start}
 #latest-news-list .latest-item:last-child{border-bottom:0}
@@ -98,19 +102,20 @@ body{background:#f4f6fa;color:var(--ink)}
 .video-news-card .vnc-play{color:var(--red);font-size:12px;font-weight:800;margin-top:5px}
 .video-news-card button{padding:0;border:0;background:transparent;text-align:left;width:100%;cursor:pointer;font:inherit}
 @media(max-width:800px){
- .hero{grid-template-columns:1fr}.hero-art{height:auto;min-height:0;aspect-ratio:16/9}
+ .hero{display:block}.hero-art{height:auto;min-height:0;aspect-ratio:16/9}
  .hero-body{padding:18px}.layout{grid-template-columns:1fr}
 }
 @media(max-width:560px){
- .hero{display:flex;flex-direction:column}.hero-art{width:100%;min-height:0;aspect-ratio:16/9}
+ .hero{display:block}.hero-art{width:100%;min-height:0;aspect-ratio:16/9}
  .hero h2{font-size:22px}.video-news-list{grid-template-columns:repeat(2,minmax(0,1fr))}
  #latest-news-list .latest-title{font-size:13px}
 }
 </style>
 
-\n<style id="oct-breaking-ticker-animation">
+<style id="oct-breaking-ticker-animation">
 .breaking .wrap{min-width:0}.breaking-label{display:flex;align-items:center;gap:6px;position:relative;z-index:2}.live-dot{width:7px;height:7px;background:#e11d2e;border-radius:50%;display:inline-block;box-shadow:0 0 0 3px #c8102e22;animation:octLivePulse 1.2s infinite}.ticker-window{flex:1;min-width:0;overflow:hidden;position:relative;white-space:nowrap}.ticker-track{display:inline-flex;align-items:center;width:max-content;white-space:nowrap;animation:octTickerScroll 28s linear infinite!important;will-change:transform}.ticker-window:hover .ticker-track{animation-play-state:paused!important}.ticker-item{display:inline-block;padding:0 16px;font-size:14px;font-weight:700;color:#fff}.ticker-separator{color:#ffe16b;font-size:13px}.ticker-idle{animation:none!important}.breaking small{flex-shrink:0}@keyframes octTickerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}@keyframes octLivePulse{0%,100%{opacity:1}50%{opacity:.35}}@media(max-width:640px){.breaking .wrap{gap:8px}.breaking small{display:none}.breaking-label{font-size:11px;padding:5px 7px}.ticker-item{font-size:13px;padding:0 12px}.ticker-track{animation-duration:23s!important}} 
-</style>\n</head>
+</style>
+</head>
 <body>
 <div class="topline"><div class="wrap"><span>সত্যনিষ্ঠ সংবাদ • দায়িত্বশীল সাংবাদিকতা</span><span id="today">OCT News 24</span></div></div>
 <header class="masthead"><div class="wrap brand"><div class="logo"><strong>OCT</strong><span>NEWS 24</span></div><div><h1>OCT News 24</h1><p>Your News. Your Voice. | আপনার খবর, আপনার কণ্ঠস্বর</p></div></div></header>
@@ -1088,7 +1093,7 @@ function status(message) {
     if (featureMeta) featureMeta.textContent = (featured.category || "সাধারণ") + " · " + new Date(featured.created_at).toLocaleDateString("bn-BD");
     if (featureContent) {
       const summary = (featured.content || "").trim();
-      featureContent.textContent = summary.length > 260 ? summary.slice(0, 260) + "…" : (summary || "বিস্তারিত পড়তে ক্লিক করুন।");
+      featureContent.textContent = summary || "বিস্তারিত পাওয়া যায়নি।";
     }
     if (featureArt) {
       featureArt.replaceChildren();
