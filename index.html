@@ -742,8 +742,11 @@ function status(message) {
       img.src = news.image_url;
       img.alt = news.title || "সংবাদের ছবি";
       img.style.width = "100%";
-      img.style.height = "180px";
-      img.style.objectFit = "cover";
+      img.style.height = "auto";
+      img.style.aspectRatio = "16 / 9";
+      img.style.objectFit = "contain";
+      img.style.background = "#101e36";
+      img.style.display = "block";
       card.appendChild(img);
     } else {
       const art = document.createElement("div");
