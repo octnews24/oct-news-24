@@ -595,6 +595,12 @@ function status(message) {
 
   if (error) {
     console.error("সংবাদ লোড হয়নি:", error.message);
+    const featureTitle = document.getElementById("main-feature-title");
+    const featureContent = document.getElementById("main-feature-content");
+    if (featureTitle) featureTitle.textContent = "সংবাদ লোড করা যায়নি";
+    if (featureContent) featureContent.textContent = "ডাটাবেস সংযোগে সমস্যা হয়েছে। Admin বা Supabase সেটিংস পরীক্ষা করুন।";
+    const ticker = document.getElementById("breaking-headline");
+    if (ticker) ticker.textContent = "ব্রেকিং নিউজ লোড করা যায়নি।";
     return;
   }
 
@@ -687,6 +693,40 @@ function status(message) {
     container.hidden = true;
     detail.hidden = false;
     detail.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // Fill the lead story from the newest published record and wire its button.
+  const feature = document.getElementById("main-feature");
+  const featureTitle = document.getElementById("main-feature-title");
+  const featureMeta = document.getElementById("main-feature-meta");
+  const featureContent = document.getElementById("main-feature-content");
+  const featureArt = document.getElementById("main-feature-art");
+  const featureRead = document.getElementById("main-feature-read");
+  if (data && data.length && feature) {
+    const featured = data[0];
+    if (featureTitle) featureTitle.textContent = featured.title || "শিরোনাম নেই";
+    if (featureMeta) featureMeta.textContent = (featured.category || "সাধারণ") + " · " + new Date(featured.created_at).toLocaleDateString("bn-BD");
+    if (featureContent) {
+      const summary = (featured.content || "").trim();
+      featureContent.textContent = summary.length > 260 ? summary.slice(0, 260) + "…" : (summary || "বিস্তারিত পড়তে ক্লিক করুন।");
+    }
+    if (featureArt) {
+      featureArt.replaceChildren();
+      if (featured.image_url) {
+        const img = document.createElement("img");
+        img.src = featured.image_url;
+        img.alt = featured.title || "প্রধান সংবাদের ছবি";
+        img.style.cssText = "width:100%;height:100%;object-fit:cover;position:absolute;inset:0";
+        featureArt.appendChild(img);
+      } else {
+        const label = document.createElement("div");
+        label.textContent = featured.category || "OCT News 24";
+        featureArt.appendChild(label);
+      }
+    }
+    if (featureRead) featureRead.addEventListener("click", () => openNews(featured));
+  } else if (feature) {
+    feature.hidden = true;
   }
 
   data.forEach((news) => {
