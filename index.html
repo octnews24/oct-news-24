@@ -976,8 +976,15 @@ function status(message) {
     }
   }
 
-  const breakingItems = (data || []).filter(item => item.is_breaking);
-  function breakingTickerItems(items) { return (items || []).filter(item => item.is_breaking && item.title); }
+  // Breaking labels expire 12 hours after publication; the article itself stays published.
+  const BREAKING_TTL_MS = 12 * 60 * 60 * 1000;
+  function isActiveBreaking(item) {
+    if (!item || !item.is_breaking || !item.title) return false;
+    const publishedAt = Date.parse(item.created_at || "");
+    return Number.isFinite(publishedAt) && (Date.now() - publishedAt) < BREAKING_TTL_MS && publishedAt <= Date.now();
+  }
+  const breakingItems = (data || []).filter(isActiveBreaking);
+  function breakingTickerItems(items) { return (items || []).filter(isActiveBreaking); }
 
   const internationalItems = breakingItems.filter(item =>
     (item.category || "").trim() === "আন্তর্জাতিক"
