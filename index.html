@@ -144,6 +144,16 @@ body{background:#f4f6fa;color:var(--ink)}
 <div class="submitbox" id="submit" hidden><h3>আপনার খবর জমা দিন</h3> <p>আপনার এলাকার খবর, ছবি ও YouTube ভিডিও লিংক পাঠান। যাচাই ও Admin-এর অনুমোদনের পর সংবাদ প্রকাশ করা হবে।</p><div class="email-tip"><strong>বড় ভিডিও বা গোপন তথ্য পাঠাতে</strong><p>নিউজরুমে ইমেইল করুন: <a href="mailto:octnews24bd@gmail.com?subject=OCT%20News%2024%20-%20News%20Tip">octnews24bd@gmail.com</a></p><small>গোপন তথ্য পাঠানোর আগে মনে রাখবেন: সাধারণ ইমেইল সম্পূর্ণ নিরাপদ বা বেনামি যোগাযোগের নিশ্চয়তা দেয় না।</small></div><form id="newsForm"><label for="name">আপনার নাম *</label><input id="name" required placeholder="নাম লিখুন"><label for="area">এলাকা *</label><input id="area" required placeholder="গ্রাম / উপজেলা / জেলা"><label for="phone">মোবাইল নম্বর</label><input id="phone" type="tel" placeholder="যোগাযোগ নম্বর"><label for="kind">খবরের ধরন</label><select id="kind"><option>স্থানীয় সংবাদ</option><option>জাতীয় সংবাদ</option><option>আন্তর্জাতিক সংবাদ</option><option>খেলাধুলা</option><option>ভিডিও রিপোর্ট</option></select><label for="link">YouTube ভিডিও লিংক (থাকলে)</label><input id="link" type="url" placeholder="https://youtu.be/..."><label for="story">খবরের বিবরণ *</label><textarea id="story" required placeholder="কী ঘটেছে, কোথায়, কখন লিখুন"></textarea><label class="checkline"><input id="rights" type="checkbox" required><span>আমি নিশ্চিত করছি তথ্য সঠিক এবং ছবি/ভিডিও ব্যবহারের অনুমতি আমার আছে।</span></label> <button class="btn" type="submit" style="margin-top:12px;width:100%">খবর জমা দিন</button><div id="formResult" class="notice" aria-live="polite"></div></form> <div class="notice">জমা দেওয়া সংবাদ যাচাই না হওয়া পর্যন্ত প্রকাশ করা হবে না।</div></div>
 </aside>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script id="oct-shared-supabase-client">
+/* One Supabase client per page prevents duplicate GoTrueClient instances. */
+(function () {
+  const URL = "https://uducrvbywfctyrzwbgxm.supabase.co";
+  const KEY = "sb_publishable_gRGNrMrTBU5HDVJqpp3GFw_HUit6rxL";
+  if (window.supabase && !window.octSupabaseClient) {
+    window.octSupabaseClient = window.supabase.createClient(URL, KEY);
+  }
+})();
+</script>
 <script>
 (() => {
   const todayElement = document.getElementById('today');
@@ -163,10 +173,8 @@ body{background:#f4f6fa;color:var(--ink)}
 
     try {
       if (!window.supabase) throw new Error('Supabase লাইব্রেরি পাওয়া যায়নি। পেজ Refresh করে আবার চেষ্টা করো।');
-      const client = window.supabase.createClient(
-        'https://uducrvbywfctyrzwbgxm.supabase.co',
-        'sb_publishable_gRGNrMrTBU5HDVJqpp3GFw_HUit6rxL'
-      );
+      const client = window.octSupabaseClient;
+      if (!client) throw new Error('Supabase client তৈরি হয়নি। পেজ Refresh করে আবার চেষ্টা করো.');
       const name = document.getElementById('name').value.trim();
       const area = document.getElementById('area').value.trim();
       const phone = document.getElementById('phone').value.trim();
@@ -682,7 +690,8 @@ function status(message) {
     try {
       if (!window.supabase) throw new Error("Supabase লাইব্রেরি লোড হয়নি। পেজ Refresh করো।");
       if (!client) {
-        client = window.supabase.createClient(PROJECT_URL, PUBLISHABLE_KEY);
+        client = window.octSupabaseClient;
+        if (!client) throw new Error("Supabase client তৈরি হয়নি। পেজ Refresh করে আবার চেষ্টা করুন।");
       }
       const { data: { session }, error } = await client.auth.getSession();
       if (error) throw error;
@@ -714,7 +723,8 @@ function status(message) {
     status("Login যাচাই হচ্ছে...");
     try {
       if (!client) {
-        client = window.supabase.createClient(PROJECT_URL, PUBLISHABLE_KEY);
+        client = window.octSupabaseClient;
+        if (!client) throw new Error("Supabase client তৈরি হয়নি। পেজ Refresh করে আবার চেষ্টা করুন।");
       }
       const email = document.getElementById("oa-email").value.trim();
       const password = document.getElementById("oa-password").value;
@@ -845,10 +855,8 @@ function status(message) {
   const container = document.querySelector(".cards");
   if (!container || !window.supabase) return;
 
-  const client = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+  const client = window.octSupabaseClient;
+  if (!client) return;
 
   const { data, error } = await client
     .from("news")
@@ -862,7 +870,16 @@ function status(message) {
     const featureContent = document.getElementById("main-feature-content");
     if (featureTitle) featureTitle.textContent = "সংবাদ লোড করা যায়নি";
     if (featureContent) featureContent.textContent = "সমস্যা: " + error.message;
-    const ticker = document.getElementById("breaking-headline");
+    // Declare breaking-news helpers before the ticker uses them (avoids the temporal-dead-zone error).
+  const BREAKING_TTL_MS = 24 * 60 * 60 * 1000;
+  function isActiveBreaking(item) {
+    if (!item || !item.is_breaking || !item.title) return false;
+    const publishedAt = Date.parse(item.created_at || "");
+    return Number.isFinite(publishedAt) && (Date.now() - publishedAt) < BREAKING_TTL_MS && publishedAt <= Date.now();
+  }
+  function breakingTickerItems(items) { return (items || []).filter(isActiveBreaking); }
+
+  const ticker = document.getElementById("breaking-headline");
     if (ticker) ticker.textContent = "সংবাদ লোড করতে সমস্যা হচ্ছে।";
     if (container) container.replaceChildren();
     const latestList = document.getElementById("latest-news-list");
@@ -979,15 +996,7 @@ function status(message) {
     }
   }
 
-  // Breaking labels expire 24 hours after publication; the article itself stays published.
-  const BREAKING_TTL_MS = 24 * 60 * 60 * 1000;
-  function isActiveBreaking(item) {
-    if (!item || !item.is_breaking || !item.title) return false;
-    const publishedAt = Date.parse(item.created_at || "");
-    return Number.isFinite(publishedAt) && (Date.now() - publishedAt) < BREAKING_TTL_MS && publishedAt <= Date.now();
-  }
   const breakingItems = (data || []).filter(isActiveBreaking);
-  function breakingTickerItems(items) { return (items || []).filter(isActiveBreaking); }
 
   const internationalItems = breakingItems.filter(item =>
     (item.category || "").trim() === "আন্তর্জাতিক"
@@ -1233,7 +1242,8 @@ function status(message) {
   const URL="https://uducrvbywfctyrzwbgxm.supabase.co";
   const KEY="sb_publishable_gRGNrMrTBU5HDVJqpp3GFw_HUit6rxL";
   if(!window.supabase)return;
-  const client=window.supabase.createClient(URL,KEY);
+  const client=window.octSupabaseClient;
+  if(!client)return;
   const targets={top:document.getElementById("oct-ad-top"),sidebar:document.getElementById("oct-ad-sidebar"),between:document.getElementById("oct-ad-between")};
   function safeHttp(value){try{const u=new URL(value,location.href);return (u.protocol==="https:"||u.protocol==="http:")?u.href:null;}catch(_){return null;}}
   function el(tag,cls,txt){const n=document.createElement(tag);if(cls)n.className=cls;if(txt)n.textContent=txt;return n;}
@@ -1302,7 +1312,8 @@ function status(message) {
   const totalEl=document.getElementById("ovc-total");
   if(!window.supabase || !todayEl || !totalEl) return;
   try{
-    const client=window.supabase.createClient(URL,KEY);
+    const client=window.octSupabaseClient;
+  if(!client)return;
     const day=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Dhaka",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
     const key="octnews24-visitor-id";
     let visitorId=localStorage.getItem(key);
