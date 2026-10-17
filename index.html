@@ -141,7 +141,7 @@ body{background:#f4f6fa;color:var(--ink)}
 <div id="oct-ad-sidebar" class="oct-ad-slot" aria-label="বিজ্ঞাপন"></div>
 <div class="sidebar-box latest"><h3>সর্বশেষ খবর</h3><div id="latest-news-list"><p class="meta">সর্বশেষ সংবাদ লোড হচ্ছে…</p></div></div>
 <div class="sidebar-box sidebar-links"><h3>জনপ্রিয় বিভাগ</h3><a href="#national">জাতীয় সংবাদ →</a><a href="#international">আন্তর্জাতিক সংবাদ →</a><a href="#local">সারাদেশ →</a><a href="#sports">খেলাধুলা →</a><a href="#video">ভিডিও নিউজ →</a></div>
-<div class="submitbox" id="submit" hidden><h3>আপনার খবর জমা দিন</h3> <p>আপনার এলাকার খবর, ছবি ও YouTube ভিডিও লিংক পাঠান। যাচাই ও Admin-এর অনুমোদনের পর সংবাদ প্রকাশ করা হবে।</p><div class="email-tip"><strong>বড় ভিডিও বা গোপন তথ্য পাঠাতে</strong><p>নিউজরুমে ইমেইল করুন: <a href="mailto:octnews24bd@gmail.com?subject=OCT%20News%2024%20-%20News%20Tip">octnews24bd@gmail.com</a></p><small>গোপন তথ্য পাঠানোর আগে মনে রাখবেন: সাধারণ ইমেইল সম্পূর্ণ নিরাপদ বা বেনামি যোগাযোগের নিশ্চয়তা দেয় না।</small></div><form id="newsForm"><label for="name">আপনার নাম *</label><input id="name" required placeholder="নাম লিখুন"><label for="area">এলাকা *</label><input id="area" required placeholder="গ্রাম / উপজেলা / জেলা"><label for="phone">মোবাইল নম্বর</label><input id="phone" type="tel" placeholder="যোগাযোগ নম্বর"><label for="kind">খবরের ধরন</label><select id="kind"><option>স্থানীয় সংবাদ</option><option>জাতীয় সংবাদ</option><option>আন্তর্জাতিক সংবাদ</option><option>খেলাধুলা</option><option>ভিডিও রিপোর্ট</option></select><label for="link">YouTube ভিডিও লিংক (থাকলে)</label><input id="link" type="url" placeholder="https://youtu.be/..."><label for="story">খবরের বিবরণ *</label><textarea id="story" required placeholder="কী ঘটেছে, কোথায়, কখন লিখুন"></textarea><label class="checkline"><input id="rights" type="checkbox" required><span>আমি নিশ্চিত করছি তথ্য সঠিক এবং ছবি/ভিডিও ব্যবহারের অনুমতি আমার আছে।</span></label> <button class="btn" type="submit" style="margin-top:12px;width:100%">খবর জমা দিন</button><div id="formResult" class="notice" aria-live="polite"></div></form> <div class="notice">জমা দেওয়া সংবাদ যাচাই না হওয়া পর্যন্ত প্রকাশ করা হবে না।</div></div>
+<div class="submitbox" id="submit" hidden><h3>আপনার খবর জমা দিন</h3> <p>আপনার এলাকার খবর, ছবি ও YouTube ভিডিও লিংক পাঠান। যাচাই ও Admin-এর অনুমোদনের পর সংবাদ প্রকাশ করা হবে।</p><div class="email-tip"><strong>বড় ভিডিও বা গোপন তথ্য পাঠাতে</strong><p>নিউজরুমে ইমেইল করুন: <a href="mailto:octnews24bd@gmail.com?subject=OCT%20News%2024%20-%20News%20Tip">octnews24bd@gmail.com</a></p><small>গোপন তথ্য পাঠানোর আগে মনে রাখবেন: সাধারণ ইমেইল সম্পূর্ণ নিরাপদ বা বেনামি যোগাযোগের নিশ্চয়তা দেয় না।</small></div><form id="newsForm"><label for="name">আপনার নাম *</label><input id="name" required maxlength="100" placeholder="নাম লিখুন"><label for="area">এলাকা *</label><input id="area" required maxlength="150" placeholder="গ্রাম / উপজেলা / জেলা"><label for="phone">মোবাইল নম্বর</label><input id="phone" type="tel" maxlength="30" placeholder="যোগাযোগ নম্বর"><label for="title">খবরের শিরোনাম *</label><input id="title" required maxlength="250" placeholder="খবরের সংক্ষিপ্ত শিরোনাম"><label for="kind">খবরের বিভাগ *</label><select id="kind" required><option value="স্থানীয় সংবাদ">স্থানীয় সংবাদ</option><option value="জাতীয় সংবাদ">জাতীয় সংবাদ</option><option value="আন্তর্জাতিক সংবাদ">আন্তর্জাতিক সংবাদ</option><option value="রাজনীতি">রাজনীতি</option><option value="সারাদেশ">সারাদেশ</option><option value="খেলাধুলা">খেলাধুলা</option><option value="বিনোদন">বিনোদন</option><option value="অর্থনীতি">অর্থনীতি</option><option value="শিক্ষা">শিক্ষা</option><option value="দুর্ঘটনা ও অপরাধ">দুর্ঘটনা ও অপরাধ</option><option value="প্রযুক্তি">প্রযুক্তি</option><option value="ভিডিও রিপোর্ট">ভিডিও রিপোর্ট</option><option value="অন্যান্য">অন্যান্য</option></select><label for="photo">খবরের ছবি (ঐচ্ছিক, সর্বোচ্চ 5 MB)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp"><small>শুধু JPG, PNG বা WebP ছবি। ভিডিও ফাইল নয়।</small><label for="link">YouTube ভিডিও লিংক (ঐচ্ছিক)</label><input id="link" type="url" placeholder="https://youtu.be/..."><label for="story">খবরের বিস্তারিত বিবরণ *</label><textarea id="story" required maxlength="10000" placeholder="কী ঘটেছে, কোথায়, কখন এবং তথ্যের সূত্র লিখুন"></textarea><label class="checkline"><input id="rights" type="checkbox" required><span>আমি নিশ্চিত করছি তথ্য সঠিক এবং ছবি/ভিডিও ব্যবহারের অনুমতি আমার আছে।</span></label> <button class="btn" type="submit" style="margin-top:12px;width:100%">খবর জমা দিন</button><div id="formResult" class="notice" aria-live="polite"></div></form> <div class="notice">জমা দেওয়া সংবাদ যাচাই না হওয়া পর্যন্ত প্রকাশ করা হবে না।</div></div>
 </aside>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script id="oct-shared-supabase-client">
@@ -178,15 +178,34 @@ body{background:#f4f6fa;color:var(--ink)}
       const name = document.getElementById('name').value.trim();
       const area = document.getElementById('area').value.trim();
       const phone = document.getElementById('phone').value.trim();
+      const title = document.getElementById('title').value.trim();
       const kind = document.getElementById('kind').value;
       const link = document.getElementById('link').value.trim();
       const story = document.getElementById('story').value.trim();
+      const photo = document.getElementById('photo').files[0];
       const rights = document.getElementById('rights').checked;
-      if (!name || !area || !story) throw new Error('নাম, এলাকা ও খবরের বিবরণ পূরণ করো।');
+      if (!name || !area || !title || !story) throw new Error('নাম, এলাকা, শিরোনাম ও খবরের বিবরণ পূরণ করো।');
       if (!rights) throw new Error('অনুমতির ঘরে টিক দাও।');
+      if (link && !/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//i.test(link)) throw new Error('ভিডিওর জন্য বৈধ YouTube লিংক দাও।');
 
+      let imageUrl = null;
+      if (photo) {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!allowedTypes.includes(photo.type)) throw new Error('শুধু JPG, PNG বা WebP ছবি আপলোড করা যাবে।');
+        if (photo.size > 5 * 1024 * 1024) throw new Error('ছবির সাইজ 5 MB-এর কম হতে হবে।');
+        resultBox.textContent = 'ছবি আপলোড হচ্ছে...';
+        const safeName = photo.name.toLowerCase().replace(/[^a-z0-9._-]/g, '-').slice(-100);
+        const objectPath = 'submissions/' + Date.now() + '-' + Math.random().toString(36).slice(2, 10) + '-' + safeName;
+        const { error: uploadError } = await client.storage.from('news-images').upload(objectPath, photo, { contentType: photo.type, upsert: false });
+        if (uploadError) throw new Error('ছবি আপলোড হয়নি। Supabase Storage-এ news-images bucket ও upload policy সেট করা আছে কি না দেখো: ' + uploadError.message);
+        const { data: publicData } = client.storage.from('news-images').getPublicUrl(objectPath);
+        imageUrl = publicData?.publicUrl || null;
+        if (!imageUrl) throw new Error('ছবির URL তৈরি করা যায়নি।');
+      }
+
+      resultBox.textContent = 'সংবাদ জমা হচ্ছে...';
       const { error } = await client.from('news_submissions').insert({
-        title: story.trim().slice(0, 100),
+        title: title,
         content: story,
         name: name,
         area: area,
@@ -195,6 +214,7 @@ body{background:#f4f6fa;color:var(--ink)}
         story: story,
         link: link || null,
         video_url: link || null,
+        image_url: imageUrl,
         status: 'pending'
       });
       if (error) throw error;
@@ -491,7 +511,7 @@ function status(message) {
     list.textContent = "জমা দেওয়া খবর লোড হচ্ছে...";
     const { data, error } = await client
       .from("news_submissions")
-      .select("id,name,area,phone,kind,story,link,video_url,image_url,status,created_at")
+      .select("id,title,name,area,phone,kind,story,link,video_url,image_url,status,created_at")
       .order("created_at", { ascending: false });
 
     if (error) {
