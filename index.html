@@ -879,16 +879,16 @@ function status(message) {
     const featureContent = document.getElementById("main-feature-content");
     if (featureTitle) featureTitle.textContent = "সংবাদ লোড করা যায়নি";
     if (featureContent) featureContent.textContent = "সমস্যা: " + error.message;
-    // Public homepage: show Bengali-script headlines only; English-only RSS headlines stay out of the Bengali feed.
-  const data = (fetchedData || []).filter(item => /[\u0980-\u09FF]/.test(item.title || ""));
-
-  const ticker = document.getElementById("breaking-headline");
+    const ticker = document.getElementById("breaking-headline");
     if (ticker) ticker.textContent = "সংবাদ লোড করতে সমস্যা হচ্ছে।";
     if (container) container.replaceChildren();
     const latestList = document.getElementById("latest-news-list");
     if (latestList) latestList.textContent = "সংবাদ লোড করা যায়নি: " + error.message;
     return;
   }
+
+  // Public homepage: show Bengali-script headlines only; English-only RSS headlines stay out of the Bengali feed.
+  const data = (fetchedData || []).filter(item => /[\u0980-\u09FF]/.test(item.title || ""));
 
   const ticker = document.getElementById("breaking-headline");
 
