@@ -371,6 +371,9 @@ body{background:#f4f6fa;color:var(--ink)}
         <label for="oa-content">সংবাদের সম্পূর্ণ বিবরণ *</label>
         <textarea id="oa-content" required></textarea>
         <label><input id="oa-breaking" type="checkbox" style="width:auto;margin:0 6px 12px 0"> 🔴 এই সংবাদটি ব্রেকিং নিউজ হিসেবে দেখাও</label>
+        <label for="oa-breaking-until">ব্রেকিং নিউজের মেয়াদ শেষ (ঐচ্ছিক)</label>
+        <input id="oa-breaking-until" type="datetime-local">
+        <p class="oa-small">সময় না দিলে ব্রেকিং নিউজ ২৪ ঘণ্টা থাকবে। পুরোনো হেডলাইন রাখতে চাইলে এখানে ভবিষ্যতের তারিখ ও সময় দিন।</p>
 
         <label>
           <input id="oa-published" type="checkbox"
@@ -462,6 +465,7 @@ function status(message) {
 
   function resetForm() {
     editingId = null;
+    document.getElementById("oa-breaking-until").value = "";
     document.getElementById("oa-news-form").reset();
     document.getElementById("oa-form-title").textContent = "নতুন সংবাদ লিখুন";
     document.getElementById("oa-save").textContent = "সংবাদ সংরক্ষণ";
@@ -641,7 +645,7 @@ function status(message) {
     newsList.textContent = "সংবাদ লোড হচ্ছে...";
     const { data, error } = await client
       .from("news")
-      .select("id,title,content,category,image_url,video_url,is_published,is_breaking,created_at")
+      .select("id,title,content,category,image_url,video_url,is_published,is_breaking,breaking_until,created_at")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -686,6 +690,7 @@ function status(message) {
         document.getElementById("oa-content").value = item.content;
         document.getElementById("oa-published").checked = item.is_published;
         document.getElementById("oa-breaking").checked = !!item.is_breaking;
+        document.getElementById("oa-breaking-until").value = item.breaking_until && Number.isFinite(Date.parse(item.breaking_until)) ? new Date(Date.parse(item.breaking_until) - new Date().getTimezoneOffset() * 60000).toISOString().slice(0,16) : "";
         document.getElementById("oa-form-title").textContent = "সংবাদ সম্পাদনা";
         document.getElementById("oa-save").textContent = "পরিবর্তন সংরক্ষণ";
         document.getElementById("oa-cancel-edit").hidden = false;
@@ -831,6 +836,18 @@ function status(message) {
         imageUrl = publicData.publicUrl;
       }
 
+      const isBreaking = document.getElementById("oa-breaking").checked;
+      const expiryInput = document.getElementById("oa-breaking-until").value;
+      let breakingUntil = null;
+      if (isBreaking) {
+        if (expiryInput) {
+          breakingUntil = new Date(expiryInput).toISOString();
+          if (Date.parse(breakingUntil) <= Date.now()) throw new Error("ব্রেকিং নিউজের মেয়াদ শেষ হওয়ার সময় ভবিষ্যতের হতে হবে।");
+        } else {
+          breakingUntil = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+        }
+      }
+
       const item = {
         title: document.getElementById("oa-title").value.trim(),
         category: document.getElementById("oa-category").value,
@@ -838,7 +855,8 @@ function status(message) {
         video_url: document.getElementById("oa-video").value.trim() || null,
         content: document.getElementById("oa-content").value.trim(),
         is_published: document.getElementById("oa-published").checked,
-        is_breaking: document.getElementById("oa-breaking").checked,
+        is_breaking: isBreaking,
+        breaking_until: breakingUntil,
         updated_at: new Date().toISOString()
       };
 
@@ -892,13 +910,14 @@ function status(message) {
   function isActiveBreaking(item) {
     if (!item || !item.is_breaking || !item.title) return false;
     const publishedAt = Date.parse(item.created_at || "");
-    return Number.isFinite(publishedAt) && (Date.now() - publishedAt) < BREAKING_TTL_MS && publishedAt <= Date.now();
+    const expiresAt = item.breaking_until ? Date.parse(item.breaking_until) : (publishedAt + BREAKING_TTL_MS);
+    return Number.isFinite(publishedAt) && Number.isFinite(expiresAt) && expiresAt > Date.now() && publishedAt <= Date.now();
   }
   function breakingTickerItems(items) { return (items || []).filter(isActiveBreaking); }
 
   const { data: fetchedData, error } = await client
     .from("news")
-    .select("id, title, content, category, image_url, video_url, is_breaking, created_at")
+    .select("id, title, content, category, image_url, video_url, is_breaking, breaking_until, created_at")
     .eq("is_published", true)
     .order("created_at", { ascending: false });
 
