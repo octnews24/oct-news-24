@@ -528,14 +528,23 @@ function status(message) {
       const article = document.createElement("article");
       article.className = "oa-item";
       const heading = document.createElement("h3");
-      heading.textContent = item.kind || "পাঠকের সংবাদ";
+      heading.textContent = item.title || item.kind || "পাঠকের সংবাদ";
       const meta = document.createElement("p");
       meta.className = "oa-small";
       meta.textContent = `নাম: ${item.name || "উল্লেখ নেই"} • এলাকা: ${item.area || "উল্লেখ নেই"} • অবস্থা: ${item.status || "pending"} • ${item.created_at ? new Date(item.created_at).toLocaleDateString("bn-BD") : "তারিখ নেই"}`;
       const story = document.createElement("p");
       story.style.whiteSpace = "pre-wrap";
       story.textContent = item.story || "বিবরণ নেই";
-      article.append(heading, meta, story);
+      article.append(heading, meta);
+      if (item.image_url) {
+        const photo = document.createElement("img");
+        photo.src = item.image_url;
+        photo.alt = "জমা দেওয়া খবরের ছবি";
+        photo.loading = "lazy";
+        photo.style.cssText = "display:block;max-width:100%;max-height:320px;object-fit:contain;border-radius:8px;margin:10px 0";
+        article.appendChild(photo);
+      }
+      article.appendChild(story);
       if (item.phone) {
         const phone = document.createElement("p"); phone.className = "oa-small";
         phone.textContent = "যোগাযোগ: " + item.phone; article.appendChild(phone);
@@ -553,7 +562,7 @@ function status(message) {
           approve.disabled = true;
           try {
             const { error: insertError } = await client.from("news").insert({
-              title: (item.story || "পাঠকের সংবাদ").trim().slice(0, 250),
+              title: (item.title || item.story || "পাঠকের সংবাদ").trim().slice(0, 250),
               content: item.story || "",
               category: item.kind || "সারাদেশ",
               image_url: item.image_url || null,
