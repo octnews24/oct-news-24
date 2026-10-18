@@ -1090,7 +1090,9 @@ function status(message) {
   closeBtn.addEventListener("click", () => {
     detail.hidden = true;
     container.hidden = false;
-    detail.remove();
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete("news");
+    history.replaceState({}, "", cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
     container.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
@@ -1098,6 +1100,34 @@ function status(message) {
   const meta = document.createElement("p");
   const image = document.createElement("img");
   const content = document.createElement("div");
+  const actionRow = document.createElement("div");
+  actionRow.className = "news-actions";
+  actionRow.style.cssText = "display:flex;flex-wrap:wrap;gap:10px;margin:18px 0";
+  const sourceLink = document.createElement("a");
+  sourceLink.textContent = "মূল সংবাদসূত্রে পড়ুন ↗";
+  sourceLink.target = "_blank";
+  sourceLink.rel = "noopener noreferrer";
+  sourceLink.style.cssText = "display:inline-block;padding:10px 14px;background:#c8102e;color:#fff;border-radius:6px;text-decoration:none;font-weight:700";
+  const shareButton = document.createElement("button");
+  shareButton.type = "button";
+  shareButton.textContent = "শেয়ার করুন";
+  shareButton.style.cssText = "padding:10px 14px;border:1px solid #c8102e;background:#fff;color:#c8102e;border-radius:6px;font-weight:700;cursor:pointer";
+  shareButton.addEventListener("click", async () => {
+    const shareUrl = new URL(window.location.href);
+    if (newsBeingShown?.id) shareUrl.searchParams.set("news", String(newsBeingShown.id));
+    const shareData = { title: title.textContent || "OCT News 24", text: title.textContent || "OCT News 24-এর সংবাদ", url: shareUrl.href };
+    try {
+      if (navigator.share) await navigator.share(shareData);
+      else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl.href);
+        shareButton.textContent = "লিংক কপি হয়েছে ✓";
+      } else {
+        window.prompt("এই সংবাদটির লিংক কপি করুন:", shareUrl.href);
+      }
+    } catch (err) {
+      if (err?.name !== "AbortError") window.prompt("এই সংবাদটির লিংক কপি করুন:", shareUrl.href);
+    }
+  });
 
   image.style.cssText =
     "display:block;width:100%;max-height:480px;object-fit:contain;" +
@@ -1106,13 +1136,26 @@ function status(message) {
   content.style.cssText =
     "font-size:18px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere;";
 
-  detail.append(closeBtn, title, meta, image, content);
+  detail.append(closeBtn, title, meta, image, content, actionRow);
   container.parentNode.insertBefore(detail, container.nextSibling);
+  let newsBeingShown = null;
 
   function getYouTubeId(value) { if (!value) return null; try { const url = new URL(value); let id = ""; if (url.hostname === "youtu.be" || url.hostname === "www.youtu.be") id = url.pathname.split("/").filter(Boolean)[0] || ""; else if (["youtube.com","www.youtube.com","m.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"].includes(url.hostname)) { if (url.pathname === "/watch") id = url.searchParams.get("v") || ""; else if (url.pathname.startsWith("/embed/") || url.pathname.startsWith("/shorts/") || url.pathname.startsWith("/live/")) id = url.pathname.split("/")[2] || ""; } return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : null; } catch (_) { return null; } }
 
   function openNews(news) {
+    newsBeingShown = news;
     title.textContent = news.title || "শিরোনাম নেই";
+    const shareUrl = new URL(window.location.href);
+    if (news.id != null) shareUrl.searchParams.set("news", String(news.id));
+    history.replaceState({}, "", shareUrl.pathname + shareUrl.search + shareUrl.hash);
+    const sourceUrl = (news.video_url || "").trim();
+    const isYouTubeSource = !!getYouTubeId(sourceUrl);
+    sourceLink.href = sourceUrl && /^https?:\/\//i.test(sourceUrl) ? sourceUrl : "#";
+    sourceLink.hidden = !sourceUrl || !/^https?:\/\//i.test(sourceUrl) || isYouTubeSource;
+    shareButton.textContent = "শেয়ার করুন";
+    actionRow.replaceChildren();
+    if (!sourceLink.hidden) actionRow.appendChild(sourceLink);
+    actionRow.appendChild(shareButton);
     meta.textContent =
       (news.category || "সাধারণ") + " · " +
       new Date(news.created_at).toLocaleDateString("bn-BD");
@@ -1221,6 +1264,13 @@ function status(message) {
 
     container.appendChild(card);
   });
+
+  // Open a shared news link directly when the page loads with ?news=<id>.
+  const sharedNewsId = new URLSearchParams(window.location.search).get("news");
+  if (sharedNewsId) {
+    const sharedNews = data.find(item => String(item.id) === sharedNewsId);
+    if (sharedNews) openNews(sharedNews);
+  }
 
   // Navigation: actually filter the live news cards by category instead of only jumping to an anchor.
   const allCards = Array.from(container.querySelectorAll(".card"));
