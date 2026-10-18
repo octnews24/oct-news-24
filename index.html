@@ -565,11 +565,20 @@ function status(message) {
           if (!confirm("এই খবরটি যাচাই করা হয়েছে এবং Draft হিসেবে news টেবিলে যোগ করবে?")) return;
           approve.disabled = true;
           try {
+            const submittedTitle = (item.title || item.story || "পাঠকের সংবাদ").replace(/\\s+/g, " ").trim();
+            const submittedStory = (item.story || "").replace(/\\r\\n?/g, "\\n").replace(/[ \\t]+\\n/g, "\\n").replace(/\\n{3,}/g, "\\n\\n").trim();
+            const attribution = [
+              "সংবাদদাতা: " + (item.name || "নাম উল্লেখ নেই"),
+              "এলাকা: " + (item.area || "উল্লেখ নেই"),
+              "সূত্র: OCT News 24 পাঠক-সংবাদ"
+            ].join("\\n");
+            const formattedContent = [submittedStory, "", "---", attribution].filter(Boolean).join("\\n");
             const { error: insertError } = await client.from("news").insert({
-              title: (item.title || item.story || "পাঠকের সংবাদ").trim().slice(0, 250),
-              content: item.story || "",
+              title: submittedTitle.slice(0, 250),
+              content: formattedContent,
               category: item.kind || "সারাদেশ",
               image_url: item.image_url || null,
+              video_url: item.video_url || item.link || null,
               is_published: false
             });
             if (insertError) throw insertError;
