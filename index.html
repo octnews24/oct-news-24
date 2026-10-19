@@ -760,6 +760,8 @@ function status(message) {
 
   document.getElementById("oct-admin-open").addEventListener("click", async () => {
     panel.style.display = "block";
+    loginBox.hidden = false;
+    dashboard.hidden = true;
     status("");
     try {
       if (!window.supabase) throw new Error("Supabase লাইব্রেরি লোড হয়নি। পেজ Refresh করো।");
