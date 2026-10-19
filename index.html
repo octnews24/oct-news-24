@@ -693,7 +693,6 @@ function status(message) {
     }
 
     newsList.replaceChildren();
-
     if (!data || data.length === 0) {
       newsList.textContent = "এখনো কোনো সংবাদ নেই। উপরের ফর্ম দিয়ে প্রথম সংবাদ লিখুন।";
       return;
@@ -703,18 +702,17 @@ function status(message) {
       const article = document.createElement("article");
       article.className = "oa-item";
       const heading = document.createElement("h3");
-      heading.textContent = item.title;
+      heading.textContent = item.title || "শিরোনাম নেই";
 
       const details = document.createElement("p");
       details.className = "oa-small";
-      details.textContent =
-        item.category + " • " +
+      details.textContent = (item.category || "বিভাগ নেই") + " • " +
         (item.is_published ? "প্রকাশিত" : "Draft") + " • " +
-        new Date(item.created_at).toLocaleDateString("bn-BD");
+        (item.created_at ? new Date(item.created_at).toLocaleDateString("bn-BD") : "তারিখ নেই");
 
       const preview = document.createElement("p");
-      preview.textContent = item.content.length > 180
-        ? item.content.slice(0, 180) + "…" : item.content;
+      preview.textContent = (item.content || "").length > 180
+        ? item.content.slice(0, 180) + "…" : (item.content || "");
 
       const edit = document.createElement("button");
       edit.type = "button";
@@ -722,14 +720,15 @@ function status(message) {
       edit.textContent = "সম্পাদনা";
       edit.addEventListener("click", () => {
         editingId = item.id;
-        document.getElementById("oa-title").value = item.title;
-        document.getElementById("oa-category").value = item.category;
+        document.getElementById("oa-title").value = item.title || "";
+        document.getElementById("oa-category").value = item.category || "জাতীয়";
         document.getElementById("oa-image").value = item.image_url || "";
         document.getElementById("oa-video").value = item.video_url || "";
-        document.getElementById("oa-content").value = item.content;
-        document.getElementById("oa-published").checked = item.is_published;
+        document.getElementById("oa-content").value = item.content || "";
+        document.getElementById("oa-published").checked = !!item.is_published;
         document.getElementById("oa-breaking").checked = !!item.is_breaking;
-        document.getElementById("oa-breaking-until").value = item.breaking_until && Number.isFinite(Date.parse(item.breaking_until)) ? new Date(Date.parse(item.breaking_until) - new Date().getTimezoneOffset() * 60000).toISOString().slice(0,16) : "";
+        document.getElementById("oa-breaking-until").value = item.breaking_until && Number.isFinite(Date.parse(item.breaking_until))
+          ? new Date(Date.parse(item.breaking_until) - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16) : "";
         document.getElementById("oa-form-title").textContent = "সংবাদ সম্পাদনা";
         document.getElementById("oa-save").textContent = "পরিবর্তন সংরক্ষণ";
         document.getElementById("oa-cancel-edit").hidden = false;
@@ -743,9 +742,9 @@ function status(message) {
       remove.textContent = "মুছুন";
       remove.addEventListener("click", async () => {
         if (!confirm("এই সংবাদটি স্থায়ীভাবে মুছে ফেলবে?")) return;
-        const { error } = await client.from("news").delete().eq("id", item.id);
-        if (error) {
-          status("মুছে ফেলা যায়নি: " + error.message);
+        const { error: deleteError } = await client.from("news").delete().eq("id", item.id);
+        if (deleteError) {
+          status("মুছে ফেলা যায়নি: " + deleteError.message);
           return;
         }
         status("সংবাদ মুছে ফেলা হয়েছে।");
@@ -753,8 +752,7 @@ function status(message) {
       });
 
       article.append(heading, details, preview, edit, remove);
-      cards.appendChild(article);
-      });
+      newsList.appendChild(article);
     });
   }
 
