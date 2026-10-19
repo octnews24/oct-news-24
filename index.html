@@ -296,7 +296,7 @@ body{background:#f4f6fa;color:var(--ink)}
 }
 </style>
 
-<button id="oct-admin-open" type="button" aria-label="Admin Login">Admin Login</button>
+<button id="oct-admin-open" type="button" aria-label="Admin Login" onclick="var p=document.getElementById(\'oct-admin\');if(p)p.style.display=\'block\';var l=document.getElementById(\'oa-login\');if(l)l.hidden=false;">Admin Login</button>
 <script>/* Admin entry is hidden from ordinary visitors; open with ?admin=1 */(function(){var b=document.getElementById("oct-admin-open");if(new URLSearchParams(location.search).get("admin")==="1"){b.style.display="block";}})();</script>
 
 <section id="oct-admin">
